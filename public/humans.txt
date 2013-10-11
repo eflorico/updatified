@@ -1,0 +1,17 @@
+Built by:
+	Concept & Design: Kumail Hunaid
+	Twitter: @kumailht
+	Website: http://kumailht.com
+	Email: contact [at] kumailht.com
+	From: Dubai, UAE
+
+	Code: Eric Wolf
+	Website: http://eric-wolf.com
+	Email: mail [at] eric-wolf.com
+	From: Kiel, Germany	
+
+Powered by:
+	Node.js
+	Express.js
+	Jade
+	MongoDB

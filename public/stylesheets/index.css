@@ -1,0 +1,186 @@
+/*
+
+updatified.com
+kumail hunaid - www.kumailht.com
+eric wolf - www.eric-wolf.com
+
+light yellow: #fffcc4
+teal: #009393
+orange: #ff3800
+
+*/
+
+
+/** reset **/
+html,  body,  div,  span,  applet,  object,  iframe,  h1,  h2,  h3,  h4,  h5,  h6,  p,  blockquote,  pre,  a,  abbr,  acronym,  address,  big,  cite,  code,  del,  dfn,  em,  font,  img,  ins,  kbd,  q,  s,  samp,  small,  strike,  strong,  sub,  tt,  var,  dd,  dl,  dt,  li,  ol,  ul,  fieldset,  form,  label,  legend,  table,  caption,  tbody,  tfoot,  thead,  tr,  th,  td {border:0; outline:0; font-weight:inherit; font-style:inherit; font-family:inherit; font-size:100%; vertical-align:baseline; margin:0; padding:0}a img {border:none}table {border-collapse:collapse; border-spacing:0}q:before,  q:after,  blockquote:before,  blockquote:after {content:""}
+
+input[type="search"]::-webkit-search-cancel-button {-webkit-appearance:searchfield-cancel-button; display:none}
+
+
+/** base **/
+#header,  #intro,  #boxoftricks .wrapper,  #information,  #footer
+ {margin:0 auto; overflow:hidden; width:990px}
+
+
+/** base typography **/
+body,  select,  input,  textarea
+ {color:#444; font:18px "New Century Schoolbook",  "Century Schoolbook L",  Cambria,  Georgia,  "Times New Roman",  times,  serif}
+
+h1,  h2,  h3,  h4,  h5,  h6 {font-weight:bold; margin-bottom:.5em}
+h1 {font-size:48px}
+h2 {font-size:36px}
+h3 {font-size:24px; letter-spacing:-.5px; word-spacing:-1px}
+h4 {font-size:21px}
+h5 {font-size:18px}
+h6 {font-size:16px}
+
+a,  a:active,  a:visited {color:#009393; text-decoration:none}
+a:hover {color:#F05476}
+
+p,  li {margin-bottom:.5em}
+ul,  ol {margin-left:2em}
+
+strong {font-weight:bold}
+em {font-style:italic}
+small {font-size:80%}
+
+::selection {background:#fffcc4}
+::-moz-selection {background:#fffcc4}
+
+/** general styles **/
+#notification {color:#fff; font:14px/180px 'nimbus sans l',  sans-serif; text-align:center; background:#000; background:rgba(0,  0,  0,  .6) url(../images/tick.png) center 40px no-repeat; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; width:150px; height:150px; position:fixed; top:50%; left:50%; margin:-75px 0 0 -75px; z-index:2000; display:none; text-shadow: 1px 1px 0px #000}
+#notification:hover {cursor:pointer}
+
+
+/** general form styles **/
+button, 
+label, input[type="button"], 
+input[type="submit"], 
+input[type="image"]
+	 {cursor:pointer}
+
+input[name=email], 
+input[type=password]
+	 {display:block; color:#777; padding:5px 10px; width:140px; -moz-border-radius:1px; -webkit-border-radius:1px; border-radius:1px; border:1px solid #eee; font:12px 'nimbus sans l', sans-serif}
+
+
+input[name=email]:focus, 
+input[type=password]:focus
+	 {border-color:#009393; color:#333}
+
+/* disable outline and borders in webkit */
+input[name=email], 
+input[type=password], 
+input[type=search] {-webkit-appearance:none}
+input:focus, textarea:focus {outline:none}
+
+.button {opacity:.7; margin:0; display:inline-block; padding:4px 15px; border:1px solid #d5d5d5; border-bottom-color:#e6e2e2; color:#aeaeae; text-align:center; text-shadow:0 1px 0 white; text-decoration:none; /* -webkit-border-radius:15px; -moz-border-radius:15px; border-radius:15px; */ border:1px solid #d5d5d5; border-bottom-color:#e6e2e2; color:#aeaeae; text-shadow:0 1px 0 white; background:#e8e8e8; background:-webkit-gradient(linear, left top, left bottom, color-stop(.2, #f3f3f3),  color-stop(1, #e6e6e6)); background:-moz-linear-gradient(center top, #f3f3f3 20%, #e6e6e6 100%); -webkit-box-shadow:inset 0 1px 0 hsla(0, 100%, 100%, .5), inset 0 0 2px hsla(0, 100%, 100%, .1), 0 1px 0 hsla(0, 100%, 100%, .7); -moz-box-shadow:inset 0 1px 0 hsla(0, 100%, 100%, .5), inset 0 0 2px hsla(0, 100%, 100%, .1), 0 1px 0 hsla(0, 100%, 100%, .7) ; box-shadow:inset 0 1px 0 hsla(0, 100%, 100%, .5), inset 0 0 2px hsla(0, 100%, 100%, .1), 0 1px 0 hsla(0, 100%, 100%, .7)}
+
+.button:hover, .button:focus {opacity:1; border:1px solid #d5d5d5; border-bottom-color:#e6e2e2; color:#aeaeae; text-shadow:0 1px 0 white; background:#e8e8e8; background:-webkit-gradient(linear, left top, left bottom, color-stop(.2, #f3f3f3), color-stop(1, #e6e6e6)); background:-moz-linear-gradient(center top, #f3f3f3 20%, #e6e6e6 100%); -webkit-box-shadow:inset 0 1px 0 hsla(0, 100%, 100%, .5), inset 0 0 2px hsla(0, 100%, 100%, .1), 0 1px 0 hsla(0, 100%, 100%, .7); -moz-box-shadow:inset 0 1px 0 hsla(0, 100%, 100%, .5), inset 0 0 2px hsla(0, 100%, 100%, .1), 0 1px 0 hsla(0, 100%, 100%, .7) ; box-shadow:inset 0 1px 0 hsla(0, 100%, 100%, .5), inset 0 0 2px hsla(0, 100%, 100%, .1), 0 1px 0 hsla(0, 100%, 100%, .7)}
+
+.button:active {border-color:#bbb; -webkit-box-shadow:inset 0 0 7px hsla(0, 0%, 0%, .3), 0 1px 0 hsla(0, 100%, 100%, 1); -moz-box-shadow:inset 0 0 7px hsla(0, 0%, 0%, .3), 0 1px 0 hsla(0, 100%, 100%, 1); box-shadow:inset 0 0 7px hsla(0, 0%, 0%, .3), 0 1px 0 hsla(0, 100%, 100%, 1)}
+
+
+/* header
+************************************************************/
+#header {margin-top:60px; margin-bottom:40px}
+#header img {float:left}
+#header .wrapper {float:right}
+#header form {float:left; margin-top:10px}
+
+
+/* #header login fields */
+#header .login input[name=email], 
+#header .login input[type=password]
+	 {float:left; margin:0 3px 0 0; width:140px}
+
+/* #header login button */
+#header .login input[type=submit]
+	 {font:bold 12px 'nimbus sans l', sans-serif; margin:0 0 0 3px}
+
+
+
+/* introduction
+*************************************************************/
+#intro {width:990px; overflow:hidden; position:relative; margin-top:40px}
+#intro .crop {width:1180px; float:left}
+#intro .fade {width:140px; height:534px; background:url(../images/gradient.png); z-index:100; position:absolute; top:0; right:0}
+#intro .wrapper {float:left; margin-top:25px; width:382px}
+#intro h5 {margin-top:30px}
+
+#intro h1 {font:bold 28px/1.3 helvetica, sans-serif; letter-spacing:-1px}
+#intro h1 em {background:#fffcc4; font-style:normal}
+#intro h1 strong {color:#f6545c}
+
+
+/** main signup form **/
+#intro .signup {font-size:16px; overflow:hidden;}
+
+#intro .signup input[name=email], 
+#intro .signup input[type=password]
+	 {font:18px "New Century Schoolbook", "Century Schoolbook L", Georgia, "Times New Roman", times, serif; margin-top:10px; margin-bottom:0; padding:10px; width:340px; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px; border-width:2px}
+
+#intro .signup input[name=email]:focus, 
+#intro .signup input[type=password]:focus
+	 {border-color:#f05476}
+
+#intro .signup div {margin-top:15px; width: 360px}
+#intro .signup input[type=checkbox] {vertical-align:bottom}
+
+#intro .signup p {font-size:18px}
+
+#intro .login {float:left; margin:32px 0 0 10px}
+
+.action-button
+	{background:url(../images/button.png) no-repeat left top; border:none; display:block; padding:0; height:44px; margin-top:20px; width:109px; float:left; color:white; font:bold 18px/42px sans-serif; text-indent:-13px; text-align:center;}
+.action-button:hover
+	{background-position:0 -60px}
+.action-button:active
+	{background-position:0 -120px}
+
+#intro #reset-password {display:block; margin:15px 0 0 0; clear:both;}
+
+#intro .signup div.error {padding:3px 0; border:solid 2px #f6545c; -moz-border-radius-topleft:2px; -moz-border-radius-topright:2px; -webkit-border-radius:2px 2px 0px 0px; border-radius:2px 2px 0px 0px}
+#intro .signup p.error {background-color:#f6545c; color:#fff; padding:8px 12px; width:340px; border-width:2px; margin-top:0; font:12px 'nimbus sans l',  sans-serif; -moz-border-radius-bottomright:2px; -moz-border-radius-bottomleft:2px; -webkit-border-radius:0px 0px 2px 2px; border-radius:0px 0px 2px 2px}
+#intro .signup input.error {border-color:#f6545c; -moz-border-radius-topleft:2px; -moz-border-radius-topright:2px; -webkit-border-radius:2px 2px 0px 0px; border-radius:2px 2px 0px 0px}
+
+/** application preview **/
+#app {float:right; position:relative; background:#fff url(../images/app.png) no-repeat left top; height:534px; width:771px; font:13px/1.5 'nimbus sans l',  freesans,  helvetica,  sans-serif}
+
+/* gadgets */
+#gadgets {margin:170px 0 0 50px; position:relative; z-index:200; }
+#gadgets a {float:left; display:block; color:#000; text-decoration:none; font-size:50px; line-height:1; text-align:center; background:url(../images/icons.png) left bottom no-repeat; width:100px; height:100px; margin-top:20px; padding-bottom:60px; opacity:0.9; position:relative;}
+#gadgets a strong {font-weight:normal; min-width:70px; height:140px}
+
+/* tooltip */
+#gadgets a span {opacity:0; background:#fffcc4; border:1px solid #fffaa2; font-size:13px; line-height:1.2; padding:10px; position:absolute; top:-60px; left:-31px; width:140px; color:#2b2200; -webkit-border-radius:4px; -moz-border-radius:4px; border-radius:4px}
+#gadgets a span:before,  #gadgets a span:after {content:""; position:absolute; z-index:1000; bottom:-8px; left:50%; margin-left:-8px; z-index:50; border-top:8px solid #fffcc4; border-left:8px solid #fff; border-right:8px solid #fff; border-bottom:0}
+
+
+a#gmail {margin-right:30px}
+a#fbnotifications {margin-right:30px; background-position:-400px bottom}
+a#github {margin-right:30px; background-position:-700px bottom}
+a#weather {text-indent:15px; background-position:-300px bottom}
+a#weather em {font-size:30px; position:relative; left:-2px; top:-15px; font-style:normal; }
+
+.search {clear:both;display:none}
+.search fieldset {width:372px; margin:0 auto; padding-top:40px; border:none}
+.search input {width:350px; padding:5px 8px 5px 6px; font-size:18px; border-width:1px; border-style:solid; border-color:#ccc #999 #999 #ccc}
+
+/* themes */
+.white {color:#000; background:#fff}
+	.white #search input {border-width:1px; border-style:solid; border-color:#CCCCCC #999999 #999999 #CCCCCC; color:#222}
+	.white #settings, .white #logout {background-position:0 -20px}
+
+/* #footer
+*************************************************************/
+#footer {color:#808080; font:14px 'nimbus sans l', sans-serif; min-height:100px; border-top:1px dashed #e6e6e6; margin-top:40px; padding-top:20px}
+
+#footer ul {float:left; margin:20px 0 0 0}
+#footer ul li {float:left; margin-right:20px}
+#footer ul li:first-child {list-style:none}
+#footer ul li a, #footer ul li a:active, #footer ul li a:visited {color:#808080}
+
+#footer ul li a:hover, #footer a:hover {text-decoration:underline; color:#f6545c}
+#footer > a { float:left; margin-right: 20px}
+#footer #authors {float:right; margin-right:0}

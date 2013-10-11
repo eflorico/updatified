@@ -1,0 +1,28 @@
+mixin meta(title, description)
+	if title === ''
+		title Updatified
+	else if title === undefined
+		title Updatified – the command center for your digital life
+	else
+		title Updatified &middot; #{title}
+
+	if description === undefined
+		meta(name='description', content='Updatified is the command center for your digital life. Get real-time updates on emails, appointments, and notifications!')
+	else if description !== ''
+		meta(name='description', content=description)
+	meta(property='og:image', content='http://updatified.com/images/thumbnail.png')
+	meta(property='twitter:title', content='Updatified — ' + title)
+	meta(property='twitter:description', content=description)
+	meta(property='twitter:image', content='http://updatified.com/images/thumbnail.png')
+
+doctype 5
+html
+	head
+		meta(charset="UTF-8")
+		block meta
+		link(rel="stylesheet", href="/stylesheets/" + stylesheet + ".css", type="text/css")
+		link(rel="apple-touch-icon", href="/images/apple-touch-icon.png", type="image/png")
+		link(rel="shortcut icon", href="/images/favicon.ico", type="image/x-icon")
+		meta(name="author", content="Kumail Hunaid & Eric Wolf")
+		meta(name="google-site-verification", content="1jwYq4Sl_rmsHINA21b6doPJ32pULV32Oqx65hikbaI")
+	block body

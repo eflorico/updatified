@@ -1,0 +1,29 @@
+extends front
+
+block meta
+	mixin meta('Login')
+
+block form
+	h5 Welcome back, please log in below:
+				
+	form.signup(action="/login", method="post")
+		input(type="email", name="email", placeholder="email@address.com", value=email, 
+			autocomplete="off", class=(error == "email" || error == "alreadySignedUp" ? "error" : ""))
+		- if (error == "email") 
+			p.error Please enter a valid email address
+		- else if (error == "alreadySignedUp")
+			p.error This email address is already signed up
+						
+		input(type="password", name="password", placeholder="password", 
+			class=(error == "password" || error == "invalidCredentials" ? "error" : ""))
+		- if (error == "password") 
+			p.error Please enter a password
+		- else if (error == "invalidCredentials")
+			p.error Invalid email address or password
+
+		input.action-button(type="submit", name="login", value="Log in")
+		p.login or <a href="signup">Sign up</a>
+
+		div(style="clear:both")
+
+		a#reset-password(href="/reset") Forgot your password?

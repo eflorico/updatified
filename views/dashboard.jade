@@ -1,0 +1,88 @@
+mixin gadget(gadget, setup)
+	if userGadgets[gadget.gadgetName]
+		.gadget.connected(id=gadget.gadgetName.toLowerCase())
+			div
+				a(href=userGadgets[gadget.gadgetName].uri)
+					= userGadgets[gadget.gadgetName].value
+					if gadget.gadgetName == 'Yweather'
+						em °
+				if setup
+					mixin setup(gadget)
+	else
+		.gadget.disconnected(id=gadget.gadgetName.toLowerCase())
+			div
+				a(href="#")
+					= 0
+					if gadget.gadgetName == 'Yweather'
+						em °
+				if setup
+					mixin setup(gadget)
+
+mixin setup(gadget)
+	if gadget.account
+		if gadget.account == 'Forrst'
+			form.setup.disconnected(action="/dashboard/forrst", method="post", autocomplete="off")
+				input(type="hidden", name="_method", value="put")
+				input(type="text", name="username", placeholder="Email or username")
+				input(type="password", name="password", placeholder="Password")
+				input(type="submit", value="Connect to #{gadget.account}")
+		else
+			form.setup.disconnected.external.one-click(action="/dashboard/" + gadget.account.toLowerCase(), method="post")
+				input(type="hidden", name="_method", value="put")
+				input(type="submit", value="Connect to #{gadget.account}")
+		form.setup.connected.one-click(action="/dashboard/" + gadget.account.toLowerCase(), method="post")
+			input(type="hidden", name="_method", value="delete")
+			input(type="submit", value="Disconnect #{gadget.account}")
+	else if gadget.gadgetName == 'Yweather'
+		form.setup.disconnected(action="/dashboard/yweather", method="post", autocomplete="off")
+			h1 Temperature
+			p Get current temperature readings from your local weather station.
+			label Select a city:
+			input(type="hidden", name="_method", value="put")
+			input(type="text", name="location", placeholder="Location", value=location)
+			input(type="submit", value="Add weather")
+		.setup.connected
+			h1 Temperature
+			label Select a city:
+			form(action="/dashboard/yweather", method="post", autocomplete="off")
+				input(type="hidden", name="_method", value="patch")
+				input(type="text", name="location", placeholder="Location", value=location)
+				input(type="submit", value="Save")
+			form(action="/dashboard/yweather", method="post")
+				input(type="hidden", name="_method", value="delete")
+				input(type="submit", value="Remove weather")
+
+extends layout
+
+block meta
+	mixin meta('', '')
+
+block body
+	div#notification
+		| Do you want to enable notifications for new emails and Facebook notifications?
+		a#enable-notifications(href="#") Yes, please!
+		a#dismiss-notifications(href="#") No, thanks
+	ul#menu
+		li
+			a#settings(href="settings", title="Add or remove gadgets") gadgets
+		li
+			a.more(href="#") +
+			ul
+				li#about Built by <a href="http://kumailht.com">Kumail</a> &amp; <a href="http://eric-wolf.com">Eric</a>
+				li
+					a#twitter(href='https://twitter.com/updatified') Follow us on Twitter
+				li
+					a#github(href='https://github.com/elektrowolf/updatified') Fork us on GitHub
+				li
+					a#logout(href='logout', title='Logout') Logout
+	#gadgets(class='items-' + activeGadgetCount)
+		mixin gadget(gadgets.Gmail, true)
+		mixin gadget(gadgets.Gcal)
+		mixin gadget(gadgets.FbNotifications, true)
+		mixin gadget(gadgets.Forrst, true)
+		mixin gadget(gadgets.SeNotifications, true)
+		mixin gadget(gadgets.GitHub, true)
+		mixin gadget(gadgets.Yweather, true)
+		#instructions Click a gadget to add or remove it
+	script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
+	script(src='/javascripts/dashboard.js')

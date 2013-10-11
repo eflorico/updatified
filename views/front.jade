@@ -1,0 +1,36 @@
+extends layout
+
+block body
+	#intro
+		.crop
+			.wrapper
+				h1.
+					<strong>Updatified</strong> is the command center for your digital life.<br />
+					Get real-time updates on emails, appointments,<br />
+					and notifications!
+				block form
+					
+			#app.white
+				#gadgets
+					a#gmail.gadget(href="#")
+						strong 5
+						span Unread emails
+					a#fbnotifications.gadget(href="#")
+						strong 3
+						span Unseen Facebook notifications
+					a#github.gadget(href="#")
+						strong 1
+						span Unseen GitHub notifications
+					a#weather.gadget(href="#")
+						strong 24
+						em °
+						span Temperature outside
+		.fade
+	#footer
+		a#twitter(href='http://twitter.com/updatified')	Follow us on Twitter
+		a#github(href='https://github.com/elektrowolf/updatified') Fork us on GitHub
+		p#authors.
+			lovingly built by <a href="http://eric-wolf.com">eric wolf</a> &amp;
+			<a href="http://kumailht.com">kumail hunaid</a>
+	script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
+	script(src='/javascripts/index.js')

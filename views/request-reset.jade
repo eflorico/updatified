@@ -1,0 +1,20 @@
+extends front
+
+block meta
+	mixin meta('Forgot your password?', 'Let us send you an email so that you can set up a new password.')
+
+block form
+	h5 Enter your email address to reset your password:
+				
+	form.signup(action="/reset", method="post")
+		input(type="email", name="email", placeholder="email@address.com", value=email, 
+			autocomplete="off", class=(error ? "error" : ""))
+		- if (error === "email") 
+			p.error Please enter a valid email address
+		- else if (error === "alreadyRequested")
+			p.error You have already requested a reset — check your email!
+		- else if (error === "notSignedUp")
+			p.error This email address is not signed up — click below to sign up.
+		
+		input.action-button(type="submit", name="reset", value="Reset")
+		p.login or <a href="login">Log in</a> / <a href="signup">Sign up</a>

@@ -1,0 +1,39 @@
+{
+	"name": "updatified",
+	"version": "1.0.0",
+	"license": "MIT",
+	"description": "Updatified is a web app that allows its users to get real-time updates on emails, appointments, and notifications all in one place.",
+	"contributors": [
+		{
+			"name": "Kumail Hunaid",
+			"email": "contact@kumailht.com",
+			"url": "kumailht.com"
+		},
+		{
+			"name": "Eric Wolf",
+			"email": "mail@eric-wolf.com",
+			"url": "eric-wolf.com"
+		}
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/elektrowolf/updatified"
+	},
+	"main": "./index",
+	"engines": {
+		"node": ">=0.10"
+	},
+	"dependencies": {
+		"express": ">=3.4.0",
+		"connect-mongo": ">=0.3.3",
+		"jade": ">=0.35.0",
+		"mongoskin": ">=0.6.0",
+		"xoauth2": ">=0.1.8",
+		"imap": ">=0.8.3",
+		"request": ">=2.27.0",
+		"underscore": ">=1.5.2",
+		"async": ">=0.2.9",
+		"node-uuid": ">=1.4.1",
+		"xml-mapping": ">=1.5.0"
+	}
+}
