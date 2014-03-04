@@ -20,8 +20,7 @@ module.exports = assembleGadget({
 			strictSSL: true
 		}, function(httpErr, res, data) {
 			//Handle HTTP errors later; attempt to gunzip first
-
-			if (res.headers && res.headers['content-encoding'] != 'gzip') {
+			if (res && res.headers && res.headers['content-encoding'] != 'gzip') {
 				return error('Unsupported content-encoding', res, callback);
 			}
 
