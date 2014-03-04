@@ -61,10 +61,20 @@ module.exports = assembleGadget({
 
 					imap.end();
 
-					callback(null, { value: mailbox.messages.unseen });
+					//Ensure callback cannot be called twice from ready and error events
+					if (callback !== null) {
+						callback(null, { value: mailbox.messages.unseen });
+						callback = null;
+					}
 				});
 			}).once('error', function(err) {
-				error(err, callback);
+				error(err, function(err) {
+					//Ensure callback cannot be called twice from ready and error events
+					if (callback !== null) {
+						callback(err);
+						callback = null;
+					}
+				});
 			});
 
 			imap.connect();
