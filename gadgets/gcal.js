@@ -149,7 +149,9 @@ module.exports = assembleGadget({
 						for (var i = 0; i < doc.items.length; i++) {
 							//Events spanning multiple days only have
 							//start.date and end.date set
-							if (doc.items[i].start.dateTime &&
+							if (doc.items[i].start &&
+								doc.items[i].end &&
+								doc.items[i].start.dateTime &&
 								doc.items[i].start.dateTime &&
 								(isToday(doc.items[i].start.dateTime) ||
 								isToday(doc.items[i].end.dateTime)))
