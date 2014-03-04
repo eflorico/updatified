@@ -141,11 +141,6 @@ exports.createQueue = function(app, errorCallback) {
 
 	//Initialise underlying queue using async.js
 	var taskQueue = async.queue(function(task, userCallback) {
-		app.log('Updating ' +
-			_.pluck(task.gadgets, 'gadgetName').join(', ') +
-			' of ' + task.user.identities.basic.email
-		);
-
 		//Move user id to list of users being processed
 		advance(task);
 

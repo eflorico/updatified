@@ -17,7 +17,7 @@ module.exports = assembleGadget({
 		if (account.expires <= new Date) {
 			tasks.push(function(callback) {
 				var google = require('../accounts/google');
-				app.log('Refreshing token of ' + that.user.identities.basic.email);
+
 				google.refresh(app, account.refresh_token, function(err, result) {
 					if (error(err, callback)) return;
 
