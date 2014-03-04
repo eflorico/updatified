@@ -20,10 +20,10 @@ mixin gadget(gadget, setup)
 
 mixin setup(gadget)
 	if gadget.account
-		if gadget.account == 'Forrst'
-			form.setup.disconnected(action="/dashboard/forrst", method="post", autocomplete="off")
+		if gadget.account == 'Forrst' || gadget.account == 'OldReader'
+			form.setup.disconnected(action="/dashboard/" + gadget.account.toLowerCase(), method="post", autocomplete="off")
 				input(type="hidden", name="_method", value="put")
-				input(type="text", name="username", placeholder="Email or username")
+				input(type="text", name="username", placeholder="E-Mail")
 				input(type="password", name="password", placeholder="Password")
 				input(type="submit", value="Connect to #{gadget.account}")
 		else
@@ -78,6 +78,7 @@ block body
 	#gadgets(class='items-' + activeGadgetCount)
 		mixin gadget(gadgets.Gmail, true)
 		mixin gadget(gadgets.Gcal)
+		mixin gadget(gadgets.OldReader, true)
 		mixin gadget(gadgets.FbNotifications, true)
 		mixin gadget(gadgets.Forrst, true)
 		mixin gadget(gadgets.SeNotifications, true)
