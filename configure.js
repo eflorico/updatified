@@ -24,7 +24,10 @@ exports.configure = function(app) {
 
 		//Emergency error handling
 		process.on('uncaughtException', function(error) {
-			app.error(error);
+			console.error(new Date().toISOString() + ' *** UPDATIFIED CRASH ***');
+			console.error(error);
+			console.error(error.stack);
+			process.exit(1);
 		});
 	});
 
