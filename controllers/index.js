@@ -144,7 +144,7 @@ exports.registerController = function(app) {
 		//If signup form was explicitly requested
 		if (req.path === '/signup') {
 			//Discard remembered email address and redirect to signup form
-			res.setHeader('set-cookie', 'knownUser=; Expires=' +
+			res.set('set-cookie', 'knownUser=; Expires=' +
 				new Date(+new Date - 24 * 60 * 60 * 1000).toUTCString());
 			return res.redirect('/');
 		}
