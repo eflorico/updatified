@@ -16,7 +16,7 @@ module.exports = assembleGadget({
 			strictSSL: true 
 		}, function(err, res, body) {
 			if (error(err, res, callback)) return;
-					
+
 			try {
 				var doc = JSON.parse(body);			
 				callback(null, { value: doc.resp.items.length });

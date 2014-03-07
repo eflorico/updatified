@@ -33,7 +33,6 @@ var Google = factory.assembleOAuth2({
 			},
 			strictSSL: true
 		}, function(err, res, body) {
-			console.log(body);
 			if (error(err, res, callback)) return;
 
 			try {
