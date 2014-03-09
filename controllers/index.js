@@ -85,9 +85,9 @@ exports.registerController = function(app) {
 		var isSignup = Boolean(req.body.passwordRepetition);
 		
 		//Basic validation
-		if (req.body.email.indexOf('@') === -1) {
+		if (!req.body.email || req.body.email.indexOf('@') === -1) {
 			res.locals.error = 'email';
-		} else if (req.body.password.trim() === '') {
+		} else if (!req.body.password || req.body.password.trim() === '') {
 			res.locals.error = 'password';
 		} else if (isSignup && req.body.password !== req.body.passwordRepetition) {
 			res.locals.error = 'passwordRepetition';
