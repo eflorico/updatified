@@ -1,4 +1,5 @@
 var request = require('request'),
+	winston = require('winston'),
 	error = require('./lib/error');
 
 exports.load = function(app) {
@@ -9,7 +10,7 @@ exports.load = function(app) {
 		//Insert hostname here, without http:// or path
 		app.set('host', 'WEBSITE.COM');
 
-		//Salt for password hashing. Mash your keyboard here, and never change this after anyone signed up. 
+		//Salt for password hashing. Mash your keyboard here, and never change this after anyone signed up.
 		app.set('salt', 'MASH KEYBOARD HERE');
 
 		//Secret for signing cookies. Mash keyboard once more.
@@ -41,7 +42,7 @@ exports.load = function(app) {
 		app.set('stackexchange-appid', 'INSERT STACKEXCHANGE APPID HERE');
 		app.set('stackexchange-secret', 'INSERT STACKEXCHANGE SECRET HERE');
 		app.set('stackexchange-key', 'INSERT STACKEXCHANGE KEY HERE');
-		
+
 		//Register your app with GitHub here https://github.com/settings/applications/new
 		//to acquire an appid and secret
 		app.set('github-appid', 'INSERT GITHUB APPID HERE');
@@ -53,12 +54,17 @@ exports.load = function(app) {
 
 		app.set('port', 80);
 
-		app.log = function(data) {
-			console.log(data.toString());
-		};
-		app.error = function(data) {
-			console.error(data.toString());
-		};
+		app.winston = winston;
+
+		//Customize logging to console here
+		app.winston.remove(winston.transports.Console);
+		app.winston.add(winston.transports.Console, {
+			level: 'debug',
+			colorize: true,
+			timestamp: true,
+			json: false,
+			handleExceptions: true
+		})
 	});
 
 	app.configure('development', function() {
@@ -66,13 +72,9 @@ exports.load = function(app) {
 		//DEVELOPMENT CONFIGURATION
 		//===============================
 		app.set('db-uri', 'mongodb://INSERT MONGODB URI HERE');
-		
-		app.mail = function(options, callback) {
-			app.log('To: ' + options.to + 
-				'; Subject: ' + options.subject);
-			app.log(options.text);
-			app.log();
 
+		app.mail = function(options, callback) {
+			app.winston.debug('E-Mail to %s: %s\n%s\n', options.to, options.subject, options.text);
 			callback();
 		};
 	});
@@ -83,7 +85,7 @@ exports.load = function(app) {
 		//===============================
 		app.set('db-uri', 'mongodb://INSERT MONGODB URI HERE');
 
-		//Specifiy user and group to loose sudo privileges 
+		//Specify user and group to drop sudo privileges
 		//after setting up server
 		//app.set('user', 'INSERT USER HERE');
 		//app.set('group', 'INSER GROUP HERE');
@@ -104,21 +106,32 @@ exports.load = function(app) {
 
 		// app.mail = function(options, callback) {
 		// 	request({
-		// 		uri: 'https://api:' + app.set('mailgun-key') + 
-		// 			'@api.mailgun.net/v2/INSERT MAILGUN USERNAME HERE.mailgun.org/messages',
+		// 		uri: 'https://api:' + app.set('mailgun-key') +
+		// 			'@api.mailgun.net/v2/INSERT MAILGUN DOMAIN HERE.mailgun.org/messages',
 		// 		method: 'POST',
-		// 		form: { 
+		// 		form: {
 		// 			from: app.set('email'),
 		// 			to: options.to,
 		// 			subject: options.subject,
 		// 			text: options.text
 		// 		},
-		// 		strictSSL: true 
+		// 		strictSSL: true
 		// 	}, function(err, res, body) {
 		// 		if (error(err, res, callback)) return;
-				
+
 		// 		callback();
 		// 	});
 		// };
+
+		//Customize logging to file here
+		app.winston.add(winston.transports.File, {
+			filename: 'updatified.log',
+			maxsize: 1000000,
+			maxFiles: 10,
+			colorize: false,
+			timestamp: true,
+			json: false,
+			handleExceptions: true
+		});
 	});
 };

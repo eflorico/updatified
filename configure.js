@@ -1,6 +1,8 @@
-var express = require('express'),
+var _ = require('underscore'),
+	express = require('express'),
 	mongo = require('mongoskin'),
 	MongoStore = require('connect-mongo')(express),
+	error = require('./lib/error'),
 	optionalSession = require('./lib/optionalSession');
 
 exports.configure = function(app) {
@@ -9,26 +11,50 @@ exports.configure = function(app) {
 
 	//Initialise database
 	app.db = mongo.db(app.set('db-uri'), { safe: true });
-	
+
 	app.use(function(req, res, next) {
 		req.db = app.db;
 		next();
 	});
 
+	//Error logging
+	app.error = function(err) {
+		err = error(err) || err;
+
+		//Remove error description from stack trace
+		var stackTrace = err.stack.split('\n').slice(1).join('\n');
+
+		function escapeForRegExp(str) {
+			return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+		}
+
+		//Trim working directory from stack trace
+		stackTrace = stackTrace.replace(new RegExp(escapeForRegExp(process.cwd()), 'g'), '.');
+
+		//Turn parts of the stack trace that belong to npm modules gray
+		var coloredStackTrace = stackTrace.replace(/^.*\.\/node_modules\/.*$/gm, '\x1B[90m$&\x1B[39m')
+
+		for (var transportName in app.winston.default.transports) {
+			var transport = app.winston.default.transports[transportName];
+			transport.log(
+				'error',
+				err.toString() + '\n' +
+				(transport.colorize ? coloredStackTrace : stackTrace) + '\n   ',
+				{ data: err.data, innerError: err.innerError },
+				function() { }
+			);
+		}
+	}
+
 	app.configure('development', function() {
-		app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 	});
 
 	app.configure('production', function() {
-		app.use(express.errorHandler({ dumpExceptions: false, showStack: false })); 
+		app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 
 		//Emergency error handling
-		process.on('uncaughtException', function(error) {
-			console.error(new Date().toISOString() + ' *** UPDATIFIED CRASH ***');
-			console.error(error);
-			console.error(error.stack);
-			process.exit(1);
-		});
+		winston.handleExceptions();
 	});
 
 	app.configure(function() {
@@ -53,7 +79,7 @@ exports.configure = function(app) {
 		app.use(express.session({
 			key: 'session',
 			store: new MongoStore({ url: app.set('db-uri') }),
-			cookie: { 
+			cookie: {
 				path: '/',
 				httpOnly: true,
 				maxAge: 20 * 365 * 24 * 60 * 60 * 1000 //20 years
@@ -76,8 +102,21 @@ exports.configure = function(app) {
 
 		//Serve static files from "public" directory
 		app.use(express.static(__dirname + '/public', { maxAage: 365 * 24 * 60 * 60 * 1000 }));
-  		
+
+		app.use(function(req, res, next) {
+			app.winston.info(req.method + ' ' + req.path);
+			next();
+		});
+
   		//Set up express.js routing
 		app.use(app.router);
+
+		app.use(function(err, req, res, next) {
+			if (err) {
+				app.error(err);
+				res.send(500, 'Sorry, something went wrong — we\'re looking into it. ' +
+					'Does it work when you try again?');
+			}
+		});
 	});
 };

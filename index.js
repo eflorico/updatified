@@ -25,16 +25,15 @@ exports.run = function(configure) {
 	
 	//Start express http server
 	app.listen(app.set('port'));
-
+	
 	//Drop root privileges if possible
 	if (app.set('user') && app.set('group')) {
 		process.setgid(app.set('user'));
 		process.setuid(app.set('group'));
 
-		app.log('Server\'s UID is now ' + process.getuid());
+		app.winston.info('Server\'s UID is now %d', process.getuid());
 	}
 
-	app.log('Updatified up and running' +
-		' on port ' + app.set('port') + 
-		' in ' + app.settings.env + ' environment');
+	app.winston.info('Updatified up and running on port %d in %s environment',
+		app.set('port'), app.settings.env);
 };
