@@ -64,7 +64,7 @@ exports.load = function(app) {
 			timestamp: true,
 			json: false,
 			handleExceptions: true
-		})
+		});
 	});
 
 	app.configure('development', function() {
