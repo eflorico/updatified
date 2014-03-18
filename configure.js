@@ -78,7 +78,10 @@ exports.configure = function(app) {
 		//Set up sessions with MongoDB as session store
 		app.use(express.session({
 			key: 'session',
-			store: new MongoStore({ url: app.set('db-uri') }),
+			store: new MongoStore({
+				url: app.set('db-uri'),
+				auto_reconnect: true
+			}),
 			cookie: {
 				path: '/',
 				httpOnly: true,
