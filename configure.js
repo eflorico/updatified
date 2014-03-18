@@ -9,18 +9,18 @@ exports.configure = function(app) {
 
 	//Initialise database
 	app.db = mongo.db(app.set('db-uri'), { safe: true });
-	
+
 	app.use(function(req, res, next) {
 		req.db = app.db;
 		next();
 	});
 
 	app.configure('development', function() {
-		app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 	});
 
 	app.configure('production', function() {
-		app.use(express.errorHandler({ dumpExceptions: false, showStack: false })); 
+		app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 
 		//Emergency error handling
 		process.on('uncaughtException', function(error) {
@@ -52,8 +52,11 @@ exports.configure = function(app) {
 		//Set up sessions with MongoDB as session store
 		app.use(express.session({
 			key: 'session',
-			store: new MongoStore({ url: app.set('db-uri') }),
-			cookie: { 
+			store: new MongoStore({
+				url: app.set('db-uri'),
+				auto_reconnect: true
+			}),
+			cookie: {
 				path: '/',
 				httpOnly: true,
 				maxAge: 20 * 365 * 24 * 60 * 60 * 1000 //20 years
@@ -76,7 +79,7 @@ exports.configure = function(app) {
 
 		//Serve static files from "public" directory
 		app.use(express.static(__dirname + '/public', { maxAage: 365 * 24 * 60 * 60 * 1000 }));
-  		
+
   		//Set up express.js routing
 		app.use(app.router);
 	});
