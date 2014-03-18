@@ -2,6 +2,7 @@ var _ = require('underscore'),
 	express = require('express'),
 	mongo = require('mongoskin'),
 	MongoStore = require('connect-mongo')(express),
+	winston = require('winston'),
 	error = require('./lib/error'),
 	optionalSession = require('./lib/optionalSession');
 
