@@ -3,7 +3,7 @@ var qs = require('querystring'),
 	error = require('../lib/error'),
 	factory = require('./factory'),
 	gadgets = require('../gadgets/gadgets');
-	
+
 var StackExchange = factory.assembleOAuth2({
 	name: 'stackexchange',
 	accessTokenUri: 'https://stackexchange.com/oauth/access_token',
@@ -19,7 +19,7 @@ var StackExchange = factory.assembleOAuth2({
 	},
 	disconnect: function(data, callback) {
 		request({
-			uri: 'https://api.stackexchange.com/2.1/apps/' + 
+			uri: 'https://api.stackexchange.com/2.1/apps/' +
 				qs.escape(data.token) + '/de-authenticate',
 			encoding: null,
 			strictSSL: true

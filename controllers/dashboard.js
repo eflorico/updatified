@@ -29,16 +29,16 @@ exports.registerController = function(app) {
 			}
 
 			//Build location string for usage in view
-			var location = _.values(_.pick(req.user.location || [ ], 
+			var location = _.values(_.pick(req.user.location || [ ],
 				[ 'area', 'province', 'country' ])).join(', ');
-	
+
 			//Render view
-			res.render('dashboard', { 
-				stylesheet: 'dashboard', 
-				gadgets: gadgets, 
-				userGadgets: userGadgets, 
+			res.render('dashboard', {
+				stylesheet: 'dashboard',
+				gadgets: gadgets,
+				userGadgets: userGadgets,
 				activeGadgetCount: _.size(userGadgets),
-				location: location 
+				location: location
 			});
 		//AJAX request for live updating
 		} else {
@@ -51,7 +51,7 @@ exports.registerController = function(app) {
 
 				return age >= minAge;
 			});
-				
+
 			//Request immediate update of user
 			app.queue.cutqueue(req.user, staleGadgets, function(updated) {
 				//Return JSON

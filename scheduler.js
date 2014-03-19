@@ -49,7 +49,7 @@ function shouldUpdate(gadgetName, user, intervals) {
 
 	//Determine current update interval for this gadget
 	//based on when the user was last seen
-	var interval = findInterval(intervals[gadgetName], 
+	var interval = findInterval(intervals[gadgetName],
 		(new Date - user.lastActivity) / 1000);
 
 	return (new Date - gadget.lastUpdate) / 1000 >= interval ||
@@ -82,7 +82,7 @@ exports.createQueue = function(app, errorCallback) {
 				callback(false);
 			}
 
-			return; 
+			return;
 		}
 
 		//Check if this user is already in the queue
@@ -119,7 +119,7 @@ exports.createQueue = function(app, errorCallback) {
 	}
 
 	function advance(task) {
-		//Remove user from queue 
+		//Remove user from queue
 		queuedUserIds.splice(queuedUserIds.indexOf(task.user._id.toString()), 1);
 
 		//Add to currently processed users
@@ -186,7 +186,7 @@ exports.createQueue = function(app, errorCallback) {
 	},
 		1 //Number of workers
 	);
-	
+
 	//Create user queue interface
 	var userQueue = {
 		//Appends a user and his gadgets to the end of the queue
@@ -218,7 +218,7 @@ exports.autoPopulateQueue = function(app, queue, errorCallback) {
 				setTimeout(callback, 30000);
 				return;
 			}
-			
+
 			//If no gadgets have to be updated, wait 500ms before checking again
 			if (result.length === 0) {
 				setTimeout(callback, 500);
@@ -233,7 +233,7 @@ exports.autoPopulateQueue = function(app, queue, errorCallback) {
 				var staleGadgets = [ ];
 
 				//Convert lowercase gadget names to gadget objects
-				//by looping over all existing gadgets since we cannot 
+				//by looping over all existing gadgets since we cannot
 				//convert the lowercase name to the original name
 				for (var gadgetName in gadgets) {
 					if (item.value.gadgets.indexOf(gadgetName.toLowerCase()) !== -1) {
@@ -263,7 +263,7 @@ function gatherStaleGadgets(app, callback) {
 			findInterval = 0 /* findInterval() */,
 			shouldUpdate = 0 /* shouldUpdate() */,
 			shouldRetreat = 0 /* shouldRetreat() */;
-		
+
 		//Contains gadgets to update
 		var staleGadgets = [ ];
 
@@ -274,15 +274,15 @@ function gatherStaleGadgets(app, callback) {
 				staleGadgets.push(gadgetName);
 			}
 		}
-		
+
 		if (staleGadgets.length > 0) {
-			emit(this._id, { 
+			emit(this._id, {
 				user: this,
 				gadgets: staleGadgets
 			});
 		}
 	}
-	
+
 	//Dummy reduce function
 	function reduce(key, values) {
 		return values[0];
@@ -293,28 +293,28 @@ function gatherStaleGadgets(app, callback) {
 	for (var gadgetName in gadgets) {
 		intervals[gadgetName.toLowerCase()] = gadgets[gadgetName].intervals;
 	}
-	
+
 	//Insert intervals into function - function is passed to MongoDB as string
 	map = map.toString().replace(
-		'{ /* UPDATE INTERVALS */ }', 
+		'{ /* UPDATE INTERVALS */ }',
 		JSON.stringify(intervals)
 	).replace(
 		'0 /* findInterval() */',
 		findInterval.toString()
 	).replace(
-		'0 /* shouldUpdate() */', 
+		'0 /* shouldUpdate() */',
 		shouldUpdate.toString()
 	).replace(
 		'0 /* shouldRetreat() */',
 		shouldRetreat.toString()
 	);
-	
+
 	//Ignore inactive users
 	var minDate = new Date(new Date() - 1000 * 60 * 60 * 24 * 7); //1w
-	
+
 	//Perform map/reduce
-	app.db.collection('users').mapReduce(map, reduce, { 
-		query: { lastActivity: { $gte: minDate } }, 
+	app.db.collection('users').mapReduce(map, reduce, {
+		query: { lastActivity: { $gte: minDate } },
 		out: { inline: true }
 	}, callback);
 }

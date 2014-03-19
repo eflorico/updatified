@@ -8,9 +8,9 @@ module.exports = assembleGadget({
 	account: 'StackExchange',
 	uri: 'http://stackexchange.com/',
 	update: function(app, callback) {
-		request({ 
+		request({
 			url: 'https://api.stackexchange.com/2.1/inbox/unread?filter=total',
-			qs: { 
+			qs: {
 				pagesize: 100,
 				access_token: this.user.accounts.stackexchange.token,
 				key: app.set('stackexchange-key')
@@ -25,7 +25,7 @@ module.exports = assembleGadget({
 			}
 
 			gunzip(data, function(gunzipErr, buffer) {
-				//Gunzip failed; report HTTP error if any, 
+				//Gunzip failed; report HTTP error if any,
 				//otherwise, report gunzip error
 				if (gunzipErr) {
 					return error(httpErr, res, callback) ||

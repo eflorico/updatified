@@ -3,7 +3,7 @@
 
 	 1. The user is redirected to the resource owner (e.g. Facebook).
 		This is done in connect().
-	 2. The user grants us access, whereupon the resource owner 
+	 2. The user grants us access, whereupon the resource owner
 		redirects the user back to us with a code.
 		This request is handled by completeConnection().
 	 3. Using the code, we request an access token from the resource owner.
@@ -61,7 +61,7 @@ exports.assembleOAuth2 = function(options) {
 		request(req, function(err, res, body) {
 			if (error(err, res, callback)) return;
 
-			//Parse response			
+			//Parse response
 			var data;
 
 			try {

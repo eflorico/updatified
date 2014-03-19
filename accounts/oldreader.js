@@ -17,13 +17,13 @@ exports.connect = function(req, res, next, callbackUri, callback) {
 		strictSSL: true
 	}, function(err, res, body) {
 		if (error(err, res, next)) return;
-		
+
 		try {
 			var token = /^Auth=(.*?)$/m.exec(body)[1];
 		} catch (err) {
 			return error(err, res, next);
 		}
-		
+
 		if (!token) {
 			return res.send(401);
 		}

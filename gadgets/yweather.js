@@ -20,7 +20,7 @@ module.exports = assembleGadget({
 			}
 		}, function(err, res, body) {
 			if (error(err, res, callback)) return;
-					
+
 			//Extract temperature and link to forecast
 			try {
 				var doc = xml.load(body);
@@ -43,12 +43,12 @@ module.exports = assembleGadget({
 });
 
 module.exports.getWoeid = function(app, location, callback) {
-	//Using node.js http module instead of request.js because request.js 
+	//Using node.js http module instead of request.js because request.js
 	//automatically escapes the request path, which causes the Yahoo API to fail
 	http.get({
 		host: 'where.yahooapis.com',
 		port: 80,
-		path: "/v1/places$and(.q('" + qs.escape(location) + 
+		path: "/v1/places$and(.q('" + qs.escape(location) +
 			  "'),.type(7))?appid=" + app.set('yahoo-appid')
 	}, function(res) {
 		if (error(res, callback)) return;
@@ -57,7 +57,7 @@ module.exports.getWoeid = function(app, location, callback) {
 		res.setEncoding('utf8');
 
 		var body = '';
-		res.on('data', function(chunk) { 
+		res.on('data', function(chunk) {
 			body += chunk;
 		});
 		res.on('end', function() {
@@ -68,9 +68,9 @@ module.exports.getWoeid = function(app, location, callback) {
 				if (!doc.places.place) {
 					throw new Error('Place not found: ' + location);
 				}
-				
-				callback(null, { 
-					name: doc.places.place.name.$t, 
+
+				callback(null, {
+					name: doc.places.place.name.$t,
 					woeid: doc.places.place.woeid.$t,
 					countrycode: doc.places.place.country.code.$t
 				});

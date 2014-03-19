@@ -1,7 +1,7 @@
 var _ = require('underscore'),
 	auth = require('../lib/auth'),
 	error = require('../lib/error'),
-	geoIo = require('../lib/geoio'), 
+	geoIo = require('../lib/geoio'),
 	Yweather = require('../gadgets/yweather');
 
 //Handles a signup request after all data have been validated
@@ -14,13 +14,13 @@ function handleSignup(req, res, next) {
 		if (err) return createUser(req, res, next, null, 'c');
 
 		//Build location string for Yahoo API
-		var locationName = _.values(_.pick(location || [ ], 
+		var locationName = _.values(_.pick(location || [ ],
 			[ 'area', 'province', 'country' ])).join(', ');
 
 		//Retrieve woeid for Yahoo weather
 		Yweather.getWoeid(req.app, locationName, function(err, place) {
 			var tempUnit = 'c';
-			
+
 			if (place) {
 				location.woeid = place.woeid;
 
@@ -30,7 +30,7 @@ function handleSignup(req, res, next) {
 			} else {
 				location = null;
 			}
-	
+
 			createUser(req, res, next, location, tempUnit);
 		});
 	});
@@ -39,9 +39,9 @@ function handleSignup(req, res, next) {
 //Creates a user account as specified in the request and logs the user in
 function createUser(req, res, next, location, tempUnit) {
 	user = {
-		identities: { basic: { 
-			email: req.body.email.toLowerCase(), 
-			password: auth.hash(req.app, req.body.password) 
+		identities: { basic: {
+			email: req.body.email.toLowerCase(),
+			password: auth.hash(req.app, req.body.password)
 		} },
 		accounts: { },
 		location: location,
@@ -77,13 +77,13 @@ exports.registerController = function(app) {
 	//Handle login and signup forms
 	app.post(/^\/(login|signup)?$/, function(req, res, next) {
 		//The presence of the password repetition is used to determine
-		//whether the user is signing up or logging in 
+		//whether the user is signing up or logging in
 		//such that users can log in via the sign up form
 		//when leaving the password repetition blank
 
 		//Determine intended action (login or signup)
 		var isSignup = Boolean(req.body.passwordRepetition);
-		
+
 		//Basic validation
 		if (!req.body.email || req.body.email.indexOf('@') === -1) {
 			res.locals.error = 'email';
@@ -97,17 +97,17 @@ exports.registerController = function(app) {
 
 		//Display error message and abort if validation has failed
 		if (res.locals.error) return next();
-		
+
 		//Attempt to find user in order to log in or to avoid duplicates
-		req.db.collection('users').findOne({ 
+		req.db.collection('users').findOne({
 			'identities.basic.email': req.body.email.toLowerCase()
 		}, function(err, user) {
 			if (error(err, next)) return;
-			
+
 			//When logging in
 			if (!isSignup) {
 				//User found, log him in
-				if (user && user.identities.basic.password === 
+				if (user && user.identities.basic.password ===
 						auth.hash(req.app, req.body.password)) {
 					auth.login(user, '/dashboard', req, res);
 				//User not found
@@ -121,7 +121,7 @@ exports.registerController = function(app) {
 						//Indicate a password mismatch
 						res.locals.error = 'passwordRepetition';
 					}
-								
+
 					next();
 				}
 			//When signing up
@@ -138,7 +138,7 @@ exports.registerController = function(app) {
 			}
 		});
 	});
-	
+
 	//Show login and signup forms
 	app.all(/^\/(login|signup)?$/, function(req, res) {
 		//If signup form was explicitly requested
@@ -148,7 +148,7 @@ exports.registerController = function(app) {
 				new Date(+new Date - 24 * 60 * 60 * 1000).toUTCString());
 			return res.redirect('/');
 		}
-		
+
 		//If form was already submitted
 		if (req.method === 'POST') {
 			//Show submitted form with error messages
@@ -164,10 +164,10 @@ exports.registerController = function(app) {
 			res.locals.form = 'signup';
 		}
 
-		res.render(res.locals.form, { 
-			stylesheet: 'index', 
+		res.render(res.locals.form, {
+			stylesheet: 'index',
 			email: req.body.email || req.cookies.knownUser || '',
 			love: req.method === 'POST' ? req.body.love : true
 		});
 	});
-}; 
+};

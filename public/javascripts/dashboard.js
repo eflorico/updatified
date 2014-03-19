@@ -7,8 +7,8 @@ var updatified = {
 	},
 	suggestEnablingPopups: function() {
 		//If webkit notifications are supported and the user has not yet declined this prompt
-		if (window.webkitNotifications && 
-				window.webkitNotifications.checkPermission() === 1 && 
+		if (window.webkitNotifications &&
+				window.webkitNotifications.checkPermission() === 1 &&
 				document.cookie.indexOf('notifications=false;') === -1) {
 			//Show prompt for notifications
 			$('#notification').show();
@@ -22,7 +22,7 @@ var updatified = {
 			$('#dismiss-notifications').click(function() {
 				var oneYearAhead = new Date(+new Date + 1000 * 60 * 60 * 24 * 365);
 				document.cookie = 'notifications=false; expires=' + oneYearAhead.toGMTString() + '; path=/dashboard';
-				
+
 				$('#notification').hide();
 
 				return false;
@@ -119,7 +119,7 @@ var updatified = {
 	toggleSetup: function(showSetup) {
 		//Prevent double initializition
 		if (showSetup == this.showingSetup) return;
-		
+
 		function hideSetupForm(forms) {
 			forms.animate({
 				opacity: 0,
@@ -128,7 +128,7 @@ var updatified = {
 				$(this).hide();
 			});
 		}
-		
+
 		function showSetupForm(forms) {
 			forms.show().css({
 				opacity: 0,
@@ -137,14 +137,14 @@ var updatified = {
 				opacity: 1,
 				top: '0px'
 			}, 100); //Show this setup
-			
+
 			$(forms).find('input[type=text]:eq(0)').focus();
 		}
 
 		//Enable setup
 		if (showSetup) {
 			this.showingSetup = true;
-			
+
 			$('#instructions').show();
 
 			//Show disconnected services
@@ -153,24 +153,24 @@ var updatified = {
 
 			$('.gadget a').click(function() {
 				var state = ($(this).closest('.gadget').is('.connected') ? 'connected' : 'disconnected');
-				
+
 				//Find setup forms for this gadget in its current state
-				var	setup = $(this).siblings('.setup.' + state); 
-				
+				var	setup = $(this).siblings('.setup.' + state);
+
 				//Use center gadget (Greader) for all Google services
 				if (setup.length == 0) setup = $('#gmail').find('.setup.' + state);
-								
+
 				if (setup.is(':hidden')) {
 					//Hide all other setups
-					hideSetupForm($('.setup:visible').not(setup)); 
-					
+					hideSetupForm($('.setup:visible').not(setup));
+
 					//Show this setup
-					showSetupForm(setup); 
+					showSetupForm(setup);
 				}
-				else 
+				else
 					//Hide this setup
-					hideSetupForm(setup); 
-				
+					hideSetupForm(setup);
+
 				return false;
 			});
 
@@ -178,7 +178,7 @@ var updatified = {
 			$('#gadgets form:not(.external)').submit(function(e) {
 				//Collect form data
 				var form = $(this), data = { };
-				
+
 				$.each(form.serializeArray(), function(i, pair) {
 					data[pair.name] = pair.value;
 				});
@@ -191,7 +191,7 @@ var updatified = {
 					url: form.attr('action'),
 					data: data,
 					success: function(response) {
-						//Find corresponding setup container 
+						//Find corresponding setup container
 						var setup = (form.is('.setup') ? form : form.closest('.setup'));
 
 						//Hide setup and clear form
@@ -207,24 +207,24 @@ var updatified = {
 
 						//All Google gadgets if central Greader form is shown
 						if (gadgets.attr('id') === 'gmail') gadgets = $('#gmail, #gcal');
-						
+
 						//Change gadget state and data
 						if (data._method === 'put' || data._method === 'patch') {
 							gadgets.removeClass('disconnected').addClass('connected').css('opacity', 1);
-							
+
 							for (var gadget in response) {
 								var link = $('#' + gadget + ' a');
 								link.contents()[0].nodeValue = response[gadget].text;
 								link.attr('href', response[gadget].uri);
 							}
-						} 
+						}
 						else if (data._method === "delete") {
 							var link = gadgets.find('a');
-							
+
 							link.attr('href', '').contents().each(function() {
 								if (this.nodeType == 3) this.nodeValue = '0';
 							});
-							
+
 							gadgets.removeClass('connected').addClass('disconnected').show();
 						}
 					},
@@ -245,13 +245,13 @@ var updatified = {
 		//Disable setup
 		else {
 			this.showingSetup = false;
-			
+
 			$('#instructions').hide();
 
 			//Hide disconnected services
 			$('.gadget.disconnected').hide();
 			$('#gadgets').attr('class', 'items-' + $('.gadget.connected').length);
-			
+
 			//Hide all setup forms
 			$('.setup').hide();
 
@@ -273,7 +273,7 @@ var updatified = {
 		if (typeof document.hidden !== "undefined") {
 			this.browser.hidden = "hidden";
 			this.browser.visibilityChange = "visibilitychange";
-		} 
+		}
 		else if (typeof document.mozHidden !== "undefined") {
 			this.browser.hidden = "mozHidden";
 			this.browser.visibilityChange = "mozvisibilitychange";
@@ -315,7 +315,7 @@ var updatified = {
 		}
 
 		//Use HTML5 page visibility API when possible
-		if (this.browser.visibilityChange) 
+		if (this.browser.visibilityChange)
 			$(document).bind(this.browser.visibilityChange, function() {
 				if (!document[self.browser.hidden]) onFocus();
 				else onBlur();
@@ -342,22 +342,22 @@ var updatified = {
 
 		//Setup
 		$('#settings').click(function(e) {
-			if (self.showingSetup) 
+			if (self.showingSetup)
 				if (window.history) window.history.pushState(false, 'Updatified', 'http://updatified.com/dashboard');
 				else document.location = '#';
 			else
 				if (window.history) window.history.pushState(true, 'Updatified - Settings', 'http://updatified.com/settings');
 				else document.location = '#settings';
-				
+
 			self.toggleSetup(!self.showingSetup);
-			
+
 			return e.preventDefault();
 		});
-		
+
 		$(window).on('popstate', function() {
 			self.toggleSetup(window.history.state === true);
 		});
-		
+
 		//Show setup according to URI / if no gadgets are set up
 		if (document.location.hash == '#settings' || document.location.pathname == '/settings' || $('.gadget.connected').length === 0) {
 			if (window.history) window.history.replaceState(true, 'Updatified - Settings', 'http://updatified.com/settings');
