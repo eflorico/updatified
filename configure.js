@@ -108,7 +108,7 @@ exports.configure = function(app) {
 		app.use(express.static(__dirname + '/public', { maxAage: 365 * 24 * 60 * 60 * 1000 }));
 
 		app.use(function(req, res, next) {
-			app.winston.info(req.method + ' ' + req.path);
+			app.winston.info(req.method + ' ' + req.url);
 			next();
 		});
 
