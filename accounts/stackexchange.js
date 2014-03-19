@@ -17,9 +17,9 @@ var StackExchange = factory.assembleOAuth2({
 				redirect_uri: callbackUri
 			});
 	},
-	disconnect: function(data, callback) {
+	disconnect: function(app, data, callback) {
 		request({
-			uri: 'https://api.stackexchange.com/2.1/apps/' + 
+			uri: 'https://api.stackexchange.com/2.1/apps/' +
 				qs.escape(data.token) + '/de-authenticate',
 			encoding: null,
 			strictSSL: true

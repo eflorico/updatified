@@ -44,7 +44,7 @@ var Google = factory.assembleOAuth2({
 			}
 		});
 	},
-	disconnect: function(data, callback) {
+	disconnect: function(app, data, callback) {
 		request({
 			uri: 'https://accounts.google.com/o/oauth2/revoke',
 			qs: {

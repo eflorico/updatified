@@ -78,7 +78,7 @@ exports.assembleOAuth2 = function(options) {
 
 			//Request another access token when a refresh token has been provided
 			//(used by Google)
-			if (data.refresh_token) {
+			if (data.refresh_token && !data.access_token) {
 				return requestToken(app, {
 					refresh_token: data.refresh_token,
 					grant_type: 'refresh_token'
@@ -106,9 +106,9 @@ exports.assembleOAuth2 = function(options) {
 				expires: data.expires
 			};
 
-			//Refresh token from previous request must be stored
-			if (params.refresh_token) {
-				result.refresh_token = params.refresh_token;
+			//Store refresh token from this or previous request
+			if (data.refresh_token || params.refresh_token) {
+				result.refresh_token = data.refresh_token || params.refresh_token;
 			}
 
 			callback(null, result);
@@ -117,7 +117,7 @@ exports.assembleOAuth2 = function(options) {
 
 	account.completeConnection = function(req, res, next, callbackUri, callback) {
 		if (req.query.error) {
-			return error(req.query.error_description, req, callback);
+			return error(req.query.error_description || req.query.error, req, callback);
 		} else if (!req.query.code) {
 			return error('No authorization code retrieved', req, callback);
 		}

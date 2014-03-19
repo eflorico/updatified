@@ -1,9 +1,10 @@
 var Gadgets = { };
 
 //Load gadgets in predefined order
-[ 
+[
 	'Gmail',
 	'Gcal',
+	'Feedly',
 	'OldReader',
 	'FbNotifications',
 	'Forrst',
