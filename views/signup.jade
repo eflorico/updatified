@@ -13,29 +13,29 @@ block meta
 
 block form
 	h5 Sign up in one click:
-				
+
 	form.signup(action="/", method="post")
-		input(type="email", name="email", placeholder="email@address.com", value=email, 
+		input(type="email", name="email", placeholder="email@address.com", value=email,
 			autocomplete="off", class=(error == "email" || error == "alreadySignedUp" ? "error" : ""))
-		- if (error == "email") 
+		- if (error == "email")
 			p.error Please enter a valid email address
 		- else if (error == "alreadySignedUp")
 			p.error This email address is already signed up
-						
+
 		input(type="password", name="password", placeholder="password", class=(error == "password" || error == "invalidCredentials" ? "error" : ""))
-		- if (error == "password") 
+		- if (error == "password")
 			p.error Please enter a password
 		- else if (error == "invalidCredentials")
 			p.error Invalid email address or password
-						
+
 		input(type="password", name="passwordRepetition", placeholder="password (again)", class=(error == "passwordRepetition" ? "error" : ""))
-		- if (error == "passwordRepetition") 
+		- if (error == "passwordRepetition")
 			p.error Try again... your passwords did not match
-		
+
 		div(class=(error == "noLove" ? "error" : ""))
 			input#promise(type="checkbox", name="love", checked=Boolean(love))
 			| <label for="promise"> I will love and use Updatified every day</label>
-		- if (error == "noLove") 
+		- if (error == "noLove")
 			p.error No love for Updatified? :-(
 
 		input.action-button(type="submit", name="signup", value="Sign up")

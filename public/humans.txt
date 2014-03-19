@@ -8,7 +8,7 @@ Built by:
 	Code: Eric Wolf
 	Website: http://eric-wolf.com
 	Email: mail [at] eric-wolf.com
-	From: Kiel, Germany	
+	From: Kiel, Germany
 
 Powered by:
 	Node.js

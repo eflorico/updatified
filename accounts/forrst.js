@@ -7,7 +7,7 @@ exports.name = 'Forrst';
 exports.connect = function(req, res, next, callbackUri, callback) {
 	request.post({
 		uri: 'https://forrst.com/api/v2/users/auth',
-		form: { 
+		form: {
 			email_or_username: req.body.username,
 			password: req.body.password
 		},
@@ -20,7 +20,7 @@ exports.connect = function(req, res, next, callbackUri, callback) {
 		} catch (err) {
 			return error(err, res, next);
 		}
-		
+
 		if (!data.resp || !data.resp.token) {
 			return res.send(401);
 		}

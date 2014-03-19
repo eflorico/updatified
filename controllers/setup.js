@@ -31,12 +31,12 @@ exports.registerController = function(app) {
 		gadgets.Yweather.getWoeid(app, req.body.location, function(err, place) {
 			//Send 404 when place was not found
 			if (err) return res.send(404);
-			
+
 			req.user.location = { area: place.name, woeid: place.woeid };
 
 			//Set temperature unit to Fahrenheit for places in the US
 			req.user.tempUnit = (place.countrycode == 'US' ? 'f' : 'c');
-			
+
 			//Pull weather data for new location
 			var yweather = new gadgets.Yweather(req.user);
 			yweather.update(app, function(err) {
@@ -78,8 +78,8 @@ exports.registerController = function(app) {
 
 		//Make sure PUT method is specified either via _method in POST body
 		//or via _method in GET querystring (the latter is necessary for OAuth redirects)
-		if (req.method !== 'PUT' && 
-			!(req.method === 'GET' && 
+		if (req.method !== 'PUT' &&
+			!(req.method === 'GET' &&
 			  req.query._method &&
 			  req.query._method.toUpperCase() === 'PUT' &&
 			  req.query.complete ||
@@ -109,7 +109,7 @@ exports.registerController = function(app) {
 		//or respond with JSON to AJAX requests
 		function setupAccount(err, account) {
 			if (error(err, next)) return;
-			
+
 			//Add new account
 			req.user.accounts[req.service.name.toLowerCase()] = account;
 

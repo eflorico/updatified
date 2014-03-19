@@ -18,6 +18,6 @@ Set up your own
 
 Before you go live
 ----------
- -  Make sure your server and MongoDB is sufficiently secured against attacks.
- -  Change the branding and perhaps the design: All relevant files can be found inside the `public` folder.
- -  Create a production configuration and set the environment variable `NODE_ENV=production`.
+ -  Make sure your server and MongoDB are sufficiently secured against attacks.
+ -  Change the branding and design: all relevant files can be found inside the `public` and `views` folders.
+ -  Create a production configuration in your `config.js` and set the environment variable `NODE_ENV=production` when running Node with Updatified.

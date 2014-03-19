@@ -2,7 +2,7 @@ var async = require('async'),
 	request = require('request'),
 	assembleGadget = require('./factory').assembleGadget,
 	error = require('../lib/error');
-	
+
 module.exports = assembleGadget({
 	name: 'Gcal',
 	account: 'Google',
@@ -27,14 +27,14 @@ module.exports = assembleGadget({
 					}
 
 					account = that.user.accounts.google;
-					
+
 					callback();
 				})
 			});
 		}
 
 		//Update calendar list every 24h
-		if (!this.data.calendars || 
+		if (!this.data.calendars ||
 			+new Date - this.data.lastCalendarUpdate >= 24 * 60 * 60 * 1000)
 		{
 			tasks.push(updateCalendars);
@@ -48,7 +48,7 @@ module.exports = assembleGadget({
 		function updateCalendars(callback) {
 			request({
 				url: 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
-				qs: { 
+				qs: {
 					minAccessRole: 'reader',
 					access_token: account.token
 				},
@@ -67,7 +67,7 @@ module.exports = assembleGadget({
 
 					that.data.lastCalendarUpdate = new Date;
 
-					callback();			
+					callback();
 				} catch (err) {
 					error(err, res, callback);
 				}
@@ -97,15 +97,15 @@ module.exports = assembleGadget({
 			localNow = new Date(+serverNow + offset * 60 * 1000);
 
 			//Determine local day start in server time
-			var localDayStart = new Date(+serverNow - 
+			var localDayStart = new Date(+serverNow -
 				localNow.getHours() * 60 * 60 * 1000 -
 				localNow.getMinutes() * 60 * 1000 -
 				localNow.getSeconds() * 1000 -
 				localNow.getMilliseconds());
-			
+
 			//Determine local day end in server time
 			var localDayEnd = new Date(+localDayStart + 24 * 60 * 60 * 1000);
-			
+
 			//Parse local date (and thereby convert to server time)
 			var localDate = new Date(dateString);
 
@@ -117,7 +117,7 @@ module.exports = assembleGadget({
 		function checkForEvents(callback) {
 			//We do not know the calendar's timezone, so we initially
 			//look for all events in UTC-12 to UTC+14.
-			//toISOString() returns the date in UTC, so we don't have to 
+			//toISOString() returns the date in UTC, so we don't have to
 			//worry about the server timezone.
 			var start = new Date;
 			start.setHours(0);
@@ -129,9 +129,9 @@ module.exports = assembleGadget({
 			//Request events from every calendar
 			async.map(that.data.calendars, function(calendarId, callback) {
 				request({
-					url: 'https://www.googleapis.com/calendar/v3/calendars/' + 
+					url: 'https://www.googleapis.com/calendar/v3/calendars/' +
 						calendarId + '/events',
-					qs: { 
+					qs: {
 						timeMin: start.toISOString(),
 						timeMax: end.toISOString(),
 						access_token: account.token
@@ -139,7 +139,7 @@ module.exports = assembleGadget({
 					strictSSL: true
 				}, function(err, res, body) {
 					if (error(err, res, callback)) return;
-					
+
 					try {
 						//Parse response
 						var doc = JSON.parse(body),
@@ -184,7 +184,7 @@ module.exports = assembleGadget({
 
 		request({
 			url: 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
-			qs: { 
+			qs: {
 				minAccessRole: 'reader',
 				access_token: token
 			},
@@ -206,7 +206,7 @@ module.exports = assembleGadget({
 		});
 	},
 	intervals: [
-		          5 * 60,            30, //5m after login, update every 30s 
+		          5 * 60,            30, //5m after login, update every 30s
 		     3 * 60 * 60,       10 * 60, //3h after login, update every 10m
 		    24 * 60 * 60,       30 * 60, //1d after login, update every 30m
 		7 * 24 * 60 * 60,   5 * 60 * 60 // 1w after login, update every 5h

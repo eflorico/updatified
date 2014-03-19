@@ -21,11 +21,11 @@ exports.run = function(configure) {
 
 	//Update gadgets continuously in the background
 	app.queue = scheduler.createQueue(app, app.error);
-	scheduler.autoPopulateQueue(app, app.queue, app.error);	
-	
+	scheduler.autoPopulateQueue(app, app.queue, app.error);
+
 	//Start express http server
 	app.listen(app.set('port'));
-	
+
 	//Drop root privileges if possible
 	if (app.set('user') && app.set('group')) {
 		process.setgid(app.set('user'));

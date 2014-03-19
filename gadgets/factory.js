@@ -8,7 +8,7 @@ options: {
 	[ uri: string, ] can alternatively be provided by update()
 	update: function(err, callback({ value: number, uri: string })),
 	[ checkAvailability: function(app, callback(boolean)), ]
-	intervals: array; maps the time since the user was last seen 
+	intervals: array; maps the time since the user was last seen
 		to an update interval. All timespans are specified in seconds.
 		An array is used instead of an object as object notation does not
 		allow numeric keys or keys consisting of caluclations.
@@ -58,7 +58,7 @@ exports.assembleGadget = function(options) {
 				if (data.uri) {
 					self.data.uri = data.uri;
 				}
-				
+
 				self.data.consecutiveErrors = 0;
 
 				callback();

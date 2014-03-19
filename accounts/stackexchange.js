@@ -3,7 +3,7 @@ var qs = require('querystring'),
 	error = require('../lib/error'),
 	factory = require('./factory'),
 	gadgets = require('../gadgets/gadgets');
-	
+
 var StackExchange = factory.assembleOAuth2({
 	name: 'stackexchange',
 	accessTokenUri: 'https://stackexchange.com/oauth/access_token',
