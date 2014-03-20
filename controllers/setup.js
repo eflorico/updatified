@@ -179,7 +179,11 @@ exports.registerController = function(app) {
 		if (req.service.disconnect) {
 			var accountData = req.user.accounts[req.service.name.toLowerCase()];
 			req.service.disconnect(accountData, function(err) {
-				if (error(err, next)) return;
+				if (err) {
+					//Log errors, but remove the account from the database anyway
+					app.error(error('Could not disconnect from ' + req.service.name, err));
+				}
+
 				deleteAccount();
 			});
 		} else {
