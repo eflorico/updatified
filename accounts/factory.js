@@ -127,7 +127,7 @@ exports.assembleOAuth2 = function(options) {
 			redirect_uri: callbackUri,
 			grant_type: 'authorization_code'
 		}, function(err, result) {
-			if (error(err, res, callback)) return;
+			if (error(err, result, callback)) return;
 
 			if (options.afterConnect) {
 				options.afterConnect(result, callback);

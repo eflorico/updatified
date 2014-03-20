@@ -39,7 +39,7 @@ exports.configure = function(app) {
 			var transport = app.winston.default.transports[transportName];
 			transport.log(
 				'error',
-				err.toString() + '\n' +
+				err.toString().trim() + '\n' +
 				(transport.colorize ? coloredStackTrace : stackTrace) + '\n   ',
 				{ data: err.data, innerError: err.innerError },
 				function() { }
