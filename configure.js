@@ -22,15 +22,12 @@ exports.configure = function(app) {
 	app.error = function(err) {
 		err = error(err) || err;
 
-		//Remove error description from stack trace
-		var stackTrace = err.stack.split('\n').slice(1).join('\n');
-
 		function escapeForRegExp(str) {
 			return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 		}
 
 		//Trim working directory from stack trace
-		stackTrace = stackTrace.replace(new RegExp(escapeForRegExp(process.cwd()), 'g'), '.');
+		var stackTrace = err.stack.replace(new RegExp(escapeForRegExp(process.cwd()), 'g'), '.');
 
 		//Turn parts of the stack trace that belong to npm modules gray
 		var coloredStackTrace = stackTrace.replace(/^.*\.\/node_modules\/.*$/gm, '\x1B[90m$&\x1B[39m')
