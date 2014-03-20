@@ -18,6 +18,10 @@ var Feedly = factory.assembleOAuth2({
 				redirect_uri: 'http://localhost'
 			});
 	},
+	afterConnect: function(result, all_data, callback) {
+		result.user_id = all_data.id;
+		callback(null, result);
+	},
 	disconnect: function(app, data, callback) {
 		request({
 			method: 'POST',
@@ -29,7 +33,7 @@ var Feedly = factory.assembleOAuth2({
 				grant_type: 'revoke_token'
 			},
 			strictSSL: true
-		}, function(err, res, data) {
+		}, function(err, res, body) {
 			if (error(err, res, callback)) return;
 
 			callback();

@@ -23,7 +23,7 @@ var Google = factory.assembleOAuth2({
 				redirect_uri: callbackUri //TODO: login_hint
 			});
 	},
-	afterConnect: function(result, callback) {
+	afterConnect: function(result, all_data, callback) {
 		//Obtain gmail address
 		request({
 			uri: 'https://www.googleapis.com/userinfo/email',

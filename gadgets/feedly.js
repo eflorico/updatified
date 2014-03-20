@@ -10,7 +10,8 @@ module.exports = assembleGadget({
 		request({
 			url: 'https://sandbox.feedly.com/v3/markers/counts',
 			qs: {
-				autorefresh: 'true'
+				autorefresh: 'true',
+				streamId: 'user/' + this.user.accounts.feedly.user_id + '/category/global.all'
 			},
 			headers: {
 				Authorization: 'OAuth ' + this.user.accounts.feedly.token
@@ -21,15 +22,7 @@ module.exports = assembleGadget({
 
 			try {
 				var doc = JSON.parse(body);
-
-				for (var i = 0; i < doc.unreadcounts.length; i++) {
-					if (/^user\/[\w-]+\/category\/global\.all$/.test(doc.unreadcounts[i].id)) {
-						callback(null, { value: doc.unreadcounts[i].count });
-						return;
-					}
-				}
-
-				callback('Feedly: global category not found');
+				callback(null, { value: doc.unreadcounts[0].count });
 			} catch (err) {
 				error(err, res, callback);
 			}

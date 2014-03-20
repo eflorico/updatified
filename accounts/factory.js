@@ -111,7 +111,7 @@ exports.assembleOAuth2 = function(options) {
 				result.refresh_token = data.refresh_token || params.refresh_token;
 			}
 
-			callback(null, result);
+			callback(null, result, data);
 		});
 	}
 
@@ -126,11 +126,11 @@ exports.assembleOAuth2 = function(options) {
 			code: req.query.code,
 			redirect_uri: callbackUri,
 			grant_type: 'authorization_code'
-		}, function(err, result) {
+		}, function(err, result, all_data) {
 			if (error(err, result, callback)) return;
 
 			if (options.afterConnect) {
-				options.afterConnect(result, callback);
+				options.afterConnect(result, all_data, callback);
 			} else {
 				callback(null, result);
 			}
