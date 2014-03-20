@@ -343,10 +343,10 @@ var updatified = {
 		//Setup
 		$('#settings').click(function(e) {
 			if (self.showingSetup)
-				if (window.history) window.history.pushState(false, 'Updatified', 'http://localhost/dashboard'); //TEMPORARY
+				if (window.history) window.history.pushState(false, 'Updatified', 'http://updatified.com/dashboard');
 				else document.location = '#';
 			else
-				if (window.history) window.history.pushState(true, 'Updatified - Settings', 'http://localhost/settings');
+				if (window.history) window.history.pushState(true, 'Updatified - Settings', 'http://updatified.com/settings');
 				else document.location = '#settings';
 
 			self.toggleSetup(!self.showingSetup);
@@ -360,7 +360,7 @@ var updatified = {
 
 		//Show setup according to URI / if no gadgets are set up
 		if (document.location.hash == '#settings' || document.location.pathname == '/settings' || $('.gadget.connected').length === 0) {
-			if (window.history) window.history.replaceState(true, 'Updatified - Settings', 'http://localhost/settings');
+			if (window.history) window.history.replaceState(true, 'Updatified - Settings', 'http://updatified.com/settings');
 			this.toggleSetup(true);
 		}
 	}
