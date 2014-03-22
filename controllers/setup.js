@@ -178,7 +178,7 @@ exports.registerController = function(app) {
 		//When possible, disonnect from service (e.g. revoke the access token)
 		if (req.service.disconnect) {
 			var accountData = req.user.accounts[req.service.name.toLowerCase()];
-			req.service.disconnect(accountData, function(err) {
+			req.service.disconnect(app, accountData, function(err) {
 				if (err) {
 					//Log errors, but remove the account from the database anyway
 					app.error(error('Could not disconnect from ' + req.service.name, err));

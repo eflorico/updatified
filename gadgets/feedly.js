@@ -8,10 +8,9 @@ module.exports = assembleGadget({
 	uri: 'http://feedly.com/',
 	update: function(app, callback) {
 		request({
-			url: 'https://sandbox.feedly.com/v3/markers/counts',
+			url: 'https://cloud.feedly.com/v3/markers/counts',
 			qs: {
-				autorefresh: 'true',
-				streamId: 'user/' + this.user.accounts.feedly.user_id + '/category/global.all'
+				autorefresh: 'true'
 			},
 			headers: {
 				Authorization: 'OAuth ' + this.user.accounts.feedly.token
@@ -22,7 +21,16 @@ module.exports = assembleGadget({
 
 			try {
 				var doc = JSON.parse(body);
-				callback(null, { value: doc.unreadcounts[0].count });
+
+				for (var i = 0; i < doc.unreadcounts.length; i++) {
+					var stream = doc.unreadcounts[i];
+					if (/^user\/[\w-]+\/category\/global\.all$/.test(stream.id)) {
+						callback(null, { value: stream.count });
+						return;
+					}
+				}
+
+				callback('Feedly: Could not find global.all category');
 			} catch (err) {
 				error(err, res, callback);
 			}

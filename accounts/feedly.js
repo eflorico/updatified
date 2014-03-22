@@ -6,16 +6,16 @@ var qs = require('querystring'),
 
 var Feedly = factory.assembleOAuth2({
 	name: 'feedly',
-	accessTokenUri: 'https://sandbox.feedly.com/v3/auth/token',
+	accessTokenUri: 'https://cloud.feedly.com/v3/auth/token',
 	accessTokenMethod: 'post',
 	responseType: 'json',
 	generateAuthUri: function(appId, callbackUri) {
-		return 'https://sandbox.feedly.com/v3/auth/auth?' +
+		return 'https://cloud.feedly.com/v3/auth/auth?' +
 			qs.stringify({
 				response_type: 'code',
 				client_id: appId,
 				scope: 'https://cloud.feedly.com/subscriptions',
-				redirect_uri: 'http://localhost'
+				redirect_uri: callbackUri
 			});
 	},
 	afterConnect: function(result, all_data, callback) {
@@ -25,7 +25,7 @@ var Feedly = factory.assembleOAuth2({
 	disconnect: function(app, data, callback) {
 		request({
 			method: 'POST',
-			uri: 'https://sandbox.feedly.com/v3/auth/token',
+			uri: 'https://cloud.feedly.com/v3/auth/token',
 			qs: {
 				refresh_token: data.refresh_token,
 				client_id: app.set('feedly-appid'),
