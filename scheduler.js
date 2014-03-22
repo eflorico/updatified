@@ -163,6 +163,11 @@ exports.createQueue = function(app, errorCallback) {
 			//Update gadgets of every service in series
 			async.eachSeries(gadgets, function(gadget, gadgetCallback) {
 				gadget.update(app, function(err) {
+					app.winston.debug('Updated %s to %d',
+						gadget.gadgetName,
+						task.user.gadgets[gadget.gadgetName.toLowerCase()].value
+					);
+
 					//Report errors but carry on
 					error(err, errorCallback);
 
