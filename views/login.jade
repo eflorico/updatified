@@ -7,6 +7,9 @@ block form
 	h5 Welcome back, please log in below:
 
 	form.signup(action="/login", method="post")
+		- if (destination)
+			input(type="hidden", name="destination", value=destination)
+
 		input(type="email", name="email", placeholder="email@address.com", value=email,
 			autocomplete="off", class=(error == "email" || error == "alreadySignedUp" ? "error" : ""))
 		- if (error == "email")
