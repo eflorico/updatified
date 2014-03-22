@@ -57,11 +57,9 @@ exports.registerController = function(app) {
 				//Return JSON
 				var gadgetData = { };
 
-				if (updated) {
-					_.each(userGadgets, function(gadget, name) {
-						gadgetData[name.toLowerCase()] = gadget.value;
-					});
-				}
+				_.each(userGadgets, function(gadget, name) {
+					gadgetData[name.toLowerCase()] = gadget.value;
+				});
 
 				res.json(gadgetData);
 			});
