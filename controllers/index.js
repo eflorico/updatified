@@ -109,7 +109,14 @@ exports.registerController = function(app) {
 				//User found, log him in
 				if (user && user.identities.basic.password ===
 						auth.hash(req.app, req.body.password)) {
-					auth.login(user, '/dashboard', req, res);
+					//Whitelist post-login redirect destinations
+					if ([ 'settings' ].indexOf(req.body.destination) === -1) {
+						delete req.body.destination;
+					}
+
+					var destination = req.body.destination || 'dashboard';
+
+					auth.login(user, '/' + destination, req, res);
 				//User not found
 				} else {
 					//If this request originated from the login form
@@ -166,8 +173,9 @@ exports.registerController = function(app) {
 
 		res.render(res.locals.form, {
 			stylesheet: 'index',
-			email: req.body.email || req.cookies.knownUser || '',
-			love: req.method === 'POST' ? req.body.love : true
+			email: req.body.email || req.cookies.knownUser || req.query.email || '',
+			love: req.method === 'POST' ? req.body.love : true,
+			destination: req.query.dst
 		});
 	});
 };
