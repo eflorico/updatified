@@ -175,7 +175,7 @@ exports.registerController = function(app) {
 	});
 
 	app.del('/dashboard/:service', function(req, res, next) {
-		//When possible, disonnect from service (e.g. revoke the access token)
+		//When possible, disconnect from service (e.g. revoke the access token)
 		if (req.service.disconnect) {
 			var accountData = req.user.accounts[req.service.name.toLowerCase()];
 			req.service.disconnect(app, accountData, function(err) {
@@ -192,7 +192,7 @@ exports.registerController = function(app) {
 
 		function deleteAccount() {
 			//Delete account
-			delete req.user.accounts[req.service.name];
+			delete req.user.accounts[req.service.name.toLowerCase()];
 
 			//Delete gadgets that belonged to the account
 			req.service.gadgets.forEach(function(gadget) {
