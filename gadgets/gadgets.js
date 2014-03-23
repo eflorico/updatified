@@ -4,6 +4,7 @@ var Gadgets = { };
 [
 	'Gmail',
 	'Gcal',
+	'Outlook',
 	'Feedly',
 	'OldReader',
 	'FbNotifications',
