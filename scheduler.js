@@ -38,7 +38,7 @@ function shouldRetreat(gadgetName, user) {
 	//Use retreat interval if an error has occured
 	if (gadget.consecutiveErrors > 0) {
 		var retreatInterval = findInterval(retreatIntervals, gadget.consecutiveErrors);
-		return (new Date - gadget.lastUpdate) / 1000 >= retreatInterval
+		return (new Date - gadget.lastUpdate) / 1000 <= retreatInterval
 	} else {
 		return false;
 	}
