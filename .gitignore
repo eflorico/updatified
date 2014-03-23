@@ -7,11 +7,11 @@ lib-cov
 *.pid
 *.gz
 
-pids
-logs
-results
+/pids
+/logs
+/results
 
-npm-debug.log
-node_modules/
-public/google*
-config.js
+/npm-debug.log
+/node_modules/
+/public/google*
+/config.js
