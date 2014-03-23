@@ -37,11 +37,7 @@ module.exports = assembleGadget({
 		tasks.push(function(callback) {
 			xoauth2.createXOAuth2Generator({
 				user: account.email,
-				clientId: app.get('live-appid'),
-				clientSecret: app.get('live-secret'),
-				refreshToken: account.refresh_token,
-				accessToken: account.token,
-				timeout: +account.expires
+				accessToken: account.token
 			}).getToken(callback);
 		});
 
