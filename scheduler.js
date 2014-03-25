@@ -317,9 +317,13 @@ function gatherStaleGadgets(app, callback) {
 	//Ignore inactive users
 	var minDate = new Date(new Date() - 1000 * 60 * 60 * 24 * 7); //1w
 
+	//Let users who are currently active perform updates via AJAX for less delay
+	//between the database update and the user receiving the fresh data
+	var maxDate = new Date(new Date() - 1000 * 20);
+
 	//Perform map/reduce
 	app.db.collection('users').mapReduce(map, reduce, {
-		query: { lastActivity: { $gte: minDate } },
+		query: { lastActivity: { $gte: minDate, $lt: maxDate } },
 		out: { inline: true }
 	}, callback);
 }
