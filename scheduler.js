@@ -158,6 +158,8 @@ exports.createQueue = function(app, errorCallback) {
 			})
 		);
 
+		var dbUpdate = { $set: { } };
+
 		//Run update on all services in parallel
 		async.each(gadgetsByService, function(gadgets, serviceCallback) {
 			//Update gadgets of every service in series
@@ -171,22 +173,33 @@ exports.createQueue = function(app, errorCallback) {
 					//Report errors but carry on
 					error(err, errorCallback);
 
+					dbUpdate.$set['gadgets.' + gadget.gadgetName.toLowerCase()] =
+						task.user.gadgets[gadget.gadgetName.toLowerCase()];
+
 					gadgetCallback();
 				});
-			}, serviceCallback);
+			}, function() {
+				if (gadgets[0].account) {
+					dbUpdate.$set['accounts.' + gadgets[0].account.toLowerCase()] =
+						task.user.accounts[gadgets[0].account.toLowerCase()];
+				}
+
+				serviceCallback();
+			});
 		}, function() {
 			//Save changes to user
 			app.db.collection('users')
-			  	.updateById(task.user._id, task.user, function(err) {
-			  	//Report errors but carry on
-				error(err, errorCallback);
+				.updateById(task.user._id, dbUpdate, function(err) {
+					//Report errors but carry on
+					error(err, errorCallback);
 
-				//Remove user from queues
-				finalize(task);
+					//Remove user from queues
+					finalize(task);
 
-				//Mark user as completed
-				userCallback();
-			});
+					//Mark user as completed
+					userCallback();
+				}
+			);
 		});
 	},
 		1 //Number of workers

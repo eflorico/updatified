@@ -1,4 +1,5 @@
-var async = require('async'),
+var _ = require('underscore'),
+	async = require('async'),
 	fs = require('fs'),
 	qs = require('querystring'),
 	auth = require('../lib/auth'),
@@ -41,17 +42,26 @@ exports.registerController = function(app) {
 			var yweather = new gadgets.Yweather(req.user);
 			yweather.update(app, function(err) {
 				//Update database
-				req.db.collection('users').updateById(req.user._id, req.user, function(err) {
-					if (error(err, next)) return;
-
-					//Send new data
-					res.json({
-						yweather: {
-							text: yweather.value,
-							uri: yweather.uri
+				req.db.collection('users').updateById(req.user._id,
+					{
+						$set: {
+							'gadgets.yweather': req.user.gadgets.yweather,
+							location: req.user.location,
+							tempUnit: req.user.tempUnit
 						}
-					});
-				});
+					},
+					function(err) {
+						if (error(err, next)) return;
+
+						//Send new data
+						res.json({
+							yweather: {
+								text: yweather.value,
+								uri: yweather.uri
+							}
+						});
+					}
+				);
 			});
 		});
 	});
@@ -61,12 +71,19 @@ exports.registerController = function(app) {
 		delete req.user.gadgets.yweather;
 
 		//Update database
-		req.db.collection('users').updateById(req.user._id, req.user, function(err) {
-			if (error(err, next)) return;
+		req.db.collection('users').updateById(req.user._id,
+			{
+				$unset: {
+					'gadgets.yweather': 1
+				}
+			},
+			function(err) {
+				if (error(err, next)) return;
 
-			//Send new data
-			res.send(200);
-		});
+				//Send new data
+				res.send(200);
+			}
+		);
 	});
 
 	//PUT new account
@@ -158,8 +175,18 @@ exports.registerController = function(app) {
 					gadgetCb();
 				});
 			}, function() {
+				var dbUpdate = { $set: { } };
+
+				//Prepare gadget data for database
+				_.each(gadgetData, function(info, name) {
+					dbUpdate.$set['gadgets.' + name] = req.user.gadgets[name];
+				});
+
+				dbUpdate.$set['accounts.' + req.service.name.toLowerCase()] = account;
+
 				//Save updated data
-				req.db.collection('users').updateById(req.user._id, req.user, function(err) {
+				req.db.collection('users').updateById(req.user._id, dbUpdate,
+					function(err) {
 					if (error(err, next)) return;
 
 					//Redirect regular requests to dashboard
@@ -191,16 +218,22 @@ exports.registerController = function(app) {
 		}
 
 		function deleteAccount() {
+			var dbUpdate = {
+				$unset: { }
+			};
+
 			//Delete account
 			delete req.user.accounts[req.service.name.toLowerCase()];
+			dbUpdate.$unset['accounts.' + req.service.name.toLowerCase()] = 1;
 
 			//Delete gadgets that belonged to the account
 			req.service.gadgets.forEach(function(gadget) {
 				delete req.user.gadgets[gadget.gadgetName.toLowerCase()];
+				dbUpdate.$unset['gadgets.' + gadget.gadgetName.toLowerCase()] = 1;
 			});
 
 			//Update database
-			req.db.collection('users').updateById(req.user._id, req.user, function(err) {
+			req.db.collection('users').updateById(req.user._id, dbUpdate, function(err) {
 				if (error(err, next)) return;
 
 				res.send(200);
