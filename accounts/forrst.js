@@ -4,7 +4,7 @@ var request = require('request'),
 
 exports.name = 'Forrst';
 
-exports.connect = function(req, res, next, callbackUri, callback) {
+exports.connect = function(req, updatifiedRes, next, callbackUri, callback) {
 	request.post({
 		uri: 'https://forrst.com/api/v2/users/auth',
 		form: {
@@ -12,17 +12,17 @@ exports.connect = function(req, res, next, callbackUri, callback) {
 			password: req.body.password
 		},
 		strictSSL: true
-	}, function(err, res, body) {
-		if (error(err, res, next)) return;
+	}, function(err, forrstRes, body) {
+		if (forrstRes && (forrstRes.statusCode === 401 || forrstRes.statusCode === 403)) {
+			return updatifiedRes.send(403);
+		}
+
+		if (error(err, forrstRes, next)) return;
 
 		try {
 			var data = JSON.parse(body);
 		} catch (err) {
-			return error(err, res, next);
-		}
-
-		if (!data.resp || !data.resp.token) {
-			return res.send(401);
+			return error(err, forrstRes, next);
 		}
 
 		callback(null, { token: data.resp.token });

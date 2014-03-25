@@ -4,7 +4,7 @@ var request = require('request'),
 
 exports.name = 'OldReader';
 
-exports.connect = function(req, res, next, callbackUri, callback) {
+exports.connect = function(req, updatifiedRes, next, callbackUri, callback) {
 	request.post({
 		uri: 'https://theoldreader.com/accounts/ClientLogin',
 		form: {
@@ -15,17 +15,17 @@ exports.connect = function(req, res, next, callbackUri, callback) {
 			Passwd: req.body.password
 		},
 		strictSSL: true
-	}, function(err, res, body) {
-		if (error(err, res, next)) return;
+	}, function(err, oldReaderRes, body) {
+		if (oldReaderRes && (oldReaderRes.statusCode === 401 || oldReaderRes.statusCode === 403)) {
+			return updatifiedRes.send(403);
+		}
+
+		if (error(err, oldReaderRes, next)) return;
 
 		try {
 			var token = /^Auth=(.*?)$/m.exec(body)[1];
 		} catch (err) {
-			return error(err, res, next);
-		}
-
-		if (!token) {
-			return res.send(401);
+			return error(err, oldReaderRes, next);
 		}
 
 		callback(null, { token: token });

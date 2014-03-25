@@ -174,6 +174,14 @@ var updatified = {
 				return false;
 			});
 
+			//Show loading indicator on all forms
+			$('#gadgets form').submit(function(e) {
+				//Indicate loading
+				var submitBtn = $(this).find('input[type=submit]');
+				submitBtn.data('original-label', submitBtn.val());
+				submitBtn.attr('disabled', true).val('Loading...');
+			});
+
 			//Ajaxify all setup forms
 			$('#gadgets form:not(.external)').submit(function(e) {
 				//Collect form data
@@ -184,7 +192,7 @@ var updatified = {
 				});
 
 				//Indicate loading
-				form.find('input[type=submit]').attr('disabled', true);
+				$(this).find('input').attr('disabled', true);
 
 				$.ajax({
 					type: 'post',
@@ -228,14 +236,21 @@ var updatified = {
 							gadgets.removeClass('connected').addClass('disconnected').show();
 						}
 					},
-					error: function() {
-						alert('Could not connect');
+					error: function(xhr) {
+						if (xhr.status === 403) {
+							alert('We could not log you in with this email address and password. Are you sure your password is correct?');
+						} else {
+							alert('Sorry, that didn\'t work. :( Try again, and, if it\'s still not working, let us know at hello@updatified.com!');
+						}
 					},
 					complete: function() {
-						//Re-enable submit button
-						form.find('input[type=submit]').attr('disabled', false);
+						//Restore form to normal state
+						form.find('input').attr('disabled', false);
+
+						var submitBtn = form.find('input[type=submit]');
+						submitBtn.val(submitBtn.data('original-label'));
 					}
-				})
+				});
 
 				e.preventDefault();
 			});
