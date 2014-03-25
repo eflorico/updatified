@@ -165,7 +165,7 @@ exports.registerController = function(app) {
 				res.locals.form = 'signup';
 			}
 		//If login form was requested or user has been remembered
-		} else if (req.path === '/login' || req.cookies.knownUser) {
+		} else if (req.path === '/login' || req.cookies.knownUser || req.query.email) {
 			res.locals.form = 'login';
 		} else {
 			res.locals.form = 'signup';
