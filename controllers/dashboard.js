@@ -40,6 +40,8 @@ exports.registerController = function(app) {
 				activeGadgetCount: _.size(userGadgets),
 				location: location
 			});
+
+			app.winston.debug('%s %s complete', req.method, req.url);
 		//AJAX request for live updating
 		} else {
 			//Find stale data
@@ -62,6 +64,8 @@ exports.registerController = function(app) {
 				});
 
 				res.json(gadgetData);
+
+				app.winston.debug('%s %s complete', req.method, req.url);
 			});
 		}
 	});
