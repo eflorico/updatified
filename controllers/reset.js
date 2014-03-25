@@ -47,6 +47,8 @@ exports.registerController = function(app) {
 				app.render('emails/password-recovery', {
 					link: app.set('uri') + 'reset/' + recoveryCode
 				}, function(err, text) {
+					if (error(err, next)) return;
+
 					app.mail({
 						to: user.identities.basic.email,
 						subject: 'Updatified Password Recovery',
