@@ -25,6 +25,7 @@ mixin setup(gadget)
 				input(type="hidden", name="_method", value="put")
 				input(type="text", name="username", placeholder="E-Mail")
 				input(type="password", name="password", placeholder="Password")
+				p We do not store your password.
 				input(type="submit", value="Connect to #{gadget.account}")
 		else
 			form.setup.disconnected.external.one-click(action="/dashboard/" + gadget.account.toLowerCase(), method="post")
