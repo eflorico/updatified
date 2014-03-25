@@ -158,6 +158,7 @@ exports.createQueue = function(app, errorCallback) {
 			})
 		);
 
+		var dbQuery = { _id: task.user._id };
 		var dbUpdate = { $set: { } };
 
 		//Run update on all services in parallel
@@ -173,33 +174,33 @@ exports.createQueue = function(app, errorCallback) {
 					//Report errors but carry on
 					error(err, errorCallback);
 
-					dbUpdate.$set['gadgets.' + gadget.gadgetName.toLowerCase()] =
-						task.user.gadgets[gadget.gadgetName.toLowerCase()];
+					var name = gadget.gadgetName.toLowerCase();
+					dbQuery['gadgets.' + name] = { $exists: true };
+					dbUpdate.$set['gadgets.' + name] = task.user.gadgets[name];
 
 					gadgetCallback();
 				});
 			}, function() {
 				if (gadgets[0].account) {
-					dbUpdate.$set['accounts.' + gadgets[0].account.toLowerCase()] =
-						task.user.accounts[gadgets[0].account.toLowerCase()];
+					var name = gadgets[0].account.toLowerCase();
+					dbQuery['accounts.' + name] = { $exists: true };
+					dbUpdate.$set['accounts.' + name] =	task.user.accounts[name];
 				}
 
 				serviceCallback();
 			});
 		}, function() {
 			//Save changes to user
-			app.db.collection('users')
-				.updateById(task.user._id, dbUpdate, function(err) {
-					//Report errors but carry on
-					error(err, errorCallback);
+			app.db.collection('users').update(dbQuery, dbUpdate, function(err) {
+				//Report errors but carry on
+				error(err, errorCallback);
 
-					//Remove user from queues
-					finalize(task);
+				//Remove user from queues
+				finalize(task);
 
-					//Mark user as completed
-					userCallback();
-				}
-			);
+				//Mark user as completed
+				userCallback();
+			});
 		});
 	},
 		1 //Number of workers
