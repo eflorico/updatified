@@ -3,7 +3,8 @@ mixin gadget(gadget, setup)
 		.gadget.connected(id=gadget.gadgetName.toLowerCase())
 			div
 				a(href=userGadgets[gadget.gadgetName].uri)
-					= userGadgets[gadget.gadgetName].value
+					//- Ensure a text node is created to avoid JS errors
+					= userGadgets[gadget.gadgetName].value || ' '
 					if gadget.gadgetName == 'Yweather'
 						em °
 				if setup
