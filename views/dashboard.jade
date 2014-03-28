@@ -4,7 +4,11 @@ mixin gadget(gadget, setup)
 			div
 				a(href=userGadgets[gadget.gadgetName].uri)
 					//- Ensure a text node is created to avoid JS errors
-					= userGadgets[gadget.gadgetName].value || ' '
+					if (userGadgets[gadget.gadgetName].value !== undefined)
+						= userGadgets[gadget.gadgetName].value
+					else
+						= ' '
+
 					if gadget.gadgetName == 'Yweather'
 						em °
 				if setup
