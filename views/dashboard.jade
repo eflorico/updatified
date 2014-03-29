@@ -4,7 +4,7 @@ mixin gadget(gadget, setup)
 			div
 				a(href=userGadgets[gadget.gadgetName].uri)
 					//- Ensure a text node is created to avoid JS errors
-					if (userGadgets[gadget.gadgetName].value !== undefined)
+					if (userGadgets[gadget.gadgetName].value !== undefined && userGadgets[gadget.gadgetName].value !== null)
 						= userGadgets[gadget.gadgetName].value
 					else
 						= ' '
