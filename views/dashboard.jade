@@ -1,52 +1,83 @@
 mixin gadget(gadget, setup)
 	if userGadgets[gadget.gadgetName]
-		.gadget.connected(id=gadget.gadgetName.toLowerCase())
-			div
-				a(href=userGadgets[gadget.gadgetName].uri)
-					//- Ensure a text node is created to avoid JS errors
-					if (userGadgets[gadget.gadgetName].value !== undefined && userGadgets[gadget.gadgetName].value !== null)
-						= userGadgets[gadget.gadgetName].value
-					else
-						= ' '
+		if userGadgets[gadget.gadgetName].consecutiveErrors < 4
+			.gadget.connected(id=gadget.gadgetName.toLowerCase())
+				div
+					a(href=userGadgets[gadget.gadgetName].uri)
+						//- Ensure a text node is created to avoid JS errors
+						if (userGadgets[gadget.gadgetName].value !== undefined && userGadgets[gadget.gadgetName].value !== null)
+							= userGadgets[gadget.gadgetName].value
+						else
+							= ' '
 
-					if gadget.gadgetName == 'Yweather'
-						em °
-				if setup
-					mixin setup(gadget)
+					if setup
+						mixin setup(gadget)
+		else
+			.gadget.connected.error(id=gadget.gadgetName.toLowerCase())
+				div
+					a(href="#") :-(
+					if setup
+						mixin setup(gadget)
 	else
 		.gadget.disconnected(id=gadget.gadgetName.toLowerCase())
 			div
 				a(href="#")
 					= 0
-					if gadget.gadgetName == 'Yweather'
-						em °
 				if setup
 					mixin setup(gadget)
 
 mixin setup(gadget)
+	mixin password_inputs(submit_label)
+		input(type="text", name="username", placeholder="E-Mail")
+		input(type="password", name="password", placeholder="Password")
+		p We do not store your password.
+		input(type="submit", value=submit_label)
+
+	mixin reconnect_inputs()
+		p Sorry, there has been an error with this gadget — try reconnecting it.
+			| If that doesn't help, either, you can contact us at 
+			| <a href="mailto:hello@updatified.com">hello@updatified.com</a>.
+		input(type="hidden", name="_method", value="patch")
+		input(type="hidden", name="reconnect", value="1")
+
 	if gadget.account
 		if gadget.account == 'Forrst' || gadget.account == 'OldReader'
 			form.setup.disconnected(action="/dashboard/" + gadget.account.toLowerCase(), method="post", autocomplete="off")
 				input(type="hidden", name="_method", value="put")
-				input(type="text", name="username", placeholder="E-Mail")
-				input(type="password", name="password", placeholder="Password")
-				p We do not store your password.
-				input(type="submit", value="Connect to #{gadget.account}")
+				mixin password_inputs("Connect to " + gadget.account)
+
+			form.setup.error(action="/dashboard/" + gadget.account.toLowerCase(), method="post", autocomplete="off")
+				mixin reconnect_inputs()
+				mixin password_inputs("Reconnect " + gadget.account)
 		else
 			form.setup.disconnected.external.one-click(action="/dashboard/" + gadget.account.toLowerCase(), method="post")
 				input(type="hidden", name="_method", value="put")
 				input(type="submit", value="Connect to #{gadget.account}")
+
+			form.setup.error.external(action="/dashboard/" + gadget.account.toLowerCase(), method="post")
+				mixin reconnect_inputs()
+				input(type="submit", value="Reconnect #{gadget.account}")
+
 		form.setup.connected.one-click(action="/dashboard/" + gadget.account.toLowerCase(), method="post")
 			input(type="hidden", name="_method", value="delete")
 			input(type="submit", value="Disconnect #{gadget.account}")
+
 	else if gadget.gadgetName == 'Yweather'
-		form.setup.disconnected(action="/dashboard/yweather", method="post", autocomplete="off")
-			h1 Temperature
-			p Get current temperature readings from your local weather station.
+		mixin weather_inputs(submit_label)
 			label Select a city:
 			input(type="hidden", name="_method", value="put")
 			input(type="text", name="location", placeholder="Location", value=location)
-			input(type="submit", value="Add weather")
+			input(type="submit", value=submit_label)
+
+		form.setup.disconnected(action="/dashboard/yweather", method="post", autocomplete="off")
+			h1 Temperature
+			p Get current temperature readings from your local weather station.
+			mixin weather_inputs("Add weather")
+
+		form.setup.error(action="/dashboard/yweather", method="post", autocomplete="off")
+			mixin reconnect_inputs()
+			mixin weather_inputs("Reconnect weather")
+
 		.setup.connected
 			h1 Temperature
 			label Select a city:
@@ -57,6 +88,7 @@ mixin setup(gadget)
 			form(action="/dashboard/yweather", method="post")
 				input(type="hidden", name="_method", value="delete")
 				input(type="submit", value="Remove weather")
+
 
 extends layout
 

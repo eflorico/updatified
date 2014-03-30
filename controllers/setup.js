@@ -13,6 +13,7 @@ exports.registerController = function(app) {
 			fs.existsSync('accounts/' + req.params.service + '.js'))
 		{
 			req.service = require('../accounts/' + req.params.service);
+		//Yweather has no associated account
 		} else if (req.params.service !== 'yweather') {
 			return res.send(404);
 		}
@@ -20,11 +21,73 @@ exports.registerController = function(app) {
 		next();
 	});
 
+	//Delete service on DELETE and on PATCH with reconnect=1
+	app.all('/dashboard/:service', function(req, res, next) {
+		//Skip if this is no delete or reconnect request
+		if (req.method !== 'DELETE' && !(req.method === 'PATCH' && req.body.reconnect === '1')) {
+			return next();
+		}
+
+		//Create mock account for Yweather, which does not have an associated account
+		if (req.params.service === 'yweather') {
+			req.service = {
+				name: 'Yweather',
+				gadgets: [
+					{
+						gadgetName: 'Yweather'
+					}
+				]
+			};
+		}
+
+		//When possible, disconnect from service (e.g. revoke the access token)
+		if (req.service.disconnect) {
+			var accountData = req.user.accounts[req.service.name.toLowerCase()];
+			req.service.disconnect(app, accountData, function(err) {
+				if (err) {
+					//Log errors, but remove the account from the database anyway
+					app.error(error('Could not disconnect from ' + req.service.name, err));
+				}
+
+				deleteAccount();
+			});
+		} else {
+			deleteAccount();
+		}
+
+		function deleteAccount() {
+			var dbUpdate = {
+				$unset: { }
+			};
+
+			//Delete account
+			delete req.user.accounts[req.service.name.toLowerCase()];
+			dbUpdate.$unset['accounts.' + req.service.name.toLowerCase()] = 1;
+
+			//Delete gadgets that belonged to the account
+			req.service.gadgets.forEach(function(gadget) {
+				delete req.user.gadgets[gadget.gadgetName.toLowerCase()];
+				dbUpdate.$unset['gadgets.' + gadget.gadgetName.toLowerCase()] = 1;
+			});
+
+			//Update database
+			req.db.collection('users').updateById(req.user._id, dbUpdate, function(err) {
+				if (error(err, next)) return;
+
+				//Move on to connect anew when reconnecting
+				if (req.body.reconnect === '1') {
+					next();
+				} else {
+					res.send(200);
+				}
+			});
+		}
+	});
+
 	//PUT or PATCH Yweather
 	app.all('/dashboard/yweather', auth.middleware(true, '/'), function(req, res, next) {
-		if (req.method === 'DELETE') {
-			return next();
-		} else if (req.method !== 'PUT' && req.method !== 'PATCH') {
+		//Reject unsupported methods
+		if (req.method !== 'PUT' && req.method !== 'PATCH') {
 			return res.send(405);
 		}
 
@@ -66,45 +129,23 @@ exports.registerController = function(app) {
 		});
 	});
 
-	//DELETE Yweather
-	app.del('/dashboard/yweather', auth.middleware(true, '/'), function(req, res, next) {
-		delete req.user.gadgets.yweather;
-
-		//Update database
-		req.db.collection('users').updateById(req.user._id,
-			{
-				$unset: {
-					'gadgets.yweather': 1
-				}
-			},
-			function(err) {
-				if (error(err, next)) return;
-
-				//Send new data
-				res.send(200);
-			}
-		);
-	});
-
-	//PUT new account
+	//Create new account on PUT or PATCH with ?reconnect=1 and
+	//handle OAuth completion redirects
 	app.all('/dashboard/:service', function(req, res, next) {
-		//Skip DELETEs and requests to Yweather
-		if (req.method === 'DELETE' || !req.service) {
-			return next();
+		//Allow dangerous method override through query parameters for redirects
+		//from OAuth services
+		if (req.method === 'GET' &&
+			req.query._method &&
+			req.query._method.toUpperCase() === 'PUT' &&
+			req.query.complete ||
+			req.user.accounts[req.params.service] !== undefined)
+		{
+			req.method = 'PUT';
 		}
 
-		//Make sure PUT method is specified either via _method in POST body
-		//or via _method in GET querystring (the latter is necessary for OAuth redirects)
-		if (req.method !== 'PUT' &&
-			!(req.method === 'GET' &&
-			  req.query._method &&
-			  req.query._method.toUpperCase() === 'PUT' &&
-			  req.query.complete ||
-			  req.user.accounts[req.params.service] !== undefined))
-		{
-			//Method not allowed
-			res.send(405);
-			return;
+		//Reject unsupported methods
+		if (req.method !== 'PUT' && !(req.method === 'PATCH' && req.body.reconnect === '1')) {
+			return res.send(405);
 		}
 
 		//Provide URI for callbacks as used by OAuth
@@ -197,46 +238,6 @@ exports.registerController = function(app) {
 						res.json(201, gadgetData);
 					}
 				});
-			});
-		}
-	});
-
-	app.del('/dashboard/:service', function(req, res, next) {
-		//When possible, disconnect from service (e.g. revoke the access token)
-		if (req.service.disconnect) {
-			var accountData = req.user.accounts[req.service.name.toLowerCase()];
-			req.service.disconnect(app, accountData, function(err) {
-				if (err) {
-					//Log errors, but remove the account from the database anyway
-					app.error(error('Could not disconnect from ' + req.service.name, err));
-				}
-
-				deleteAccount();
-			});
-		} else {
-			deleteAccount();
-		}
-
-		function deleteAccount() {
-			var dbUpdate = {
-				$unset: { }
-			};
-
-			//Delete account
-			delete req.user.accounts[req.service.name.toLowerCase()];
-			dbUpdate.$unset['accounts.' + req.service.name.toLowerCase()] = 1;
-
-			//Delete gadgets that belonged to the account
-			req.service.gadgets.forEach(function(gadget) {
-				delete req.user.gadgets[gadget.gadgetName.toLowerCase()];
-				dbUpdate.$unset['gadgets.' + gadget.gadgetName.toLowerCase()] = 1;
-			});
-
-			//Update database
-			req.db.collection('users').updateById(req.user._id, dbUpdate, function(err) {
-				if (error(err, next)) return;
-
-				res.send(200);
 			});
 		}
 	});

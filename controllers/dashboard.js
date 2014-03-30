@@ -55,12 +55,16 @@ exports.registerController = function(app) {
 			});
 
 			//Request immediate update of user
-			app.queue.cutqueue(req.user, staleGadgets, function(updated) {
+			app.queue.cutqueue(req.user, _.values(staleGadgets), function(updated) {
 				//Return JSON
 				var gadgetData = { };
 
 				_.each(userGadgets, function(gadget, name) {
-					gadgetData[name.toLowerCase()] = gadget.value;
+					if (gadget.consecutiveErrors < 4) {
+						gadgetData[name.toLowerCase()] = gadget.value;
+					} else {
+						gadgetData[name.toLowerCase()] = null;
+					}
 				});
 
 				res.json(gadgetData);

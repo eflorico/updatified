@@ -73,6 +73,12 @@ exports.createQueue = function(app, errorCallback) {
 	//Adds a task to update a user's gadgets to the front (position == true)
 	//or end (position == false) of the queue
 	function insert(user, gadgets, position, callback) {
+		//Remove gadgets that should not be updated now due to errors as
+		//this is not checked earlier when updating via AJAX
+		gadgets = _.filter(gadgets, function(gadget) {
+			return !shouldRetreat(gadget.gadgetName.toLowerCase(), user);
+		});
+
 		//Abort if there is nothing to update or
 		//if this user is already being processed
 		if (gadgets.length === 0 ||

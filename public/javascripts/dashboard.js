@@ -48,7 +48,13 @@ var updatified = {
 						if (!newData.hasOwnProperty(gadget)) continue;
 
 						//Update gadget
-						self.gadgets[gadget].textNode.nodeValue = newData[gadget];
+						if (newData[gadget] !== null) {
+							self.gadgets[gadget].textNode.nodeValue = newData[gadget];
+						} else {
+							self.gadgets[gadget].textNode.nodeValue = ':-(';
+						}
+
+						self.gadgets[gadget].element.toggleClass('error', newData[gadget] === null);
 					}
 				},
 				complete: function() {
@@ -116,9 +122,8 @@ var updatified = {
 			}, 5000);
 		}
 	},
-	toggleSetup: function(showSetup) {
-		//Prevent double initializition
-		if (showSetup == this.showingSetup) return;
+	initSetup: function() {
+		var self = this;
 
 		function hideSetupForm(forms) {
 			forms.animate({
@@ -141,8 +146,131 @@ var updatified = {
 			$(forms).find('input[type=text]:eq(0)').focus();
 		}
 
+		$('.gadget a').click(function() {
+			var gadget = $(this).closest('.gadget');
+
+			if (!self.showingSetup && !gadget.is('.error')) {
+				return true;
+			}
+
+			var state;
+
+			if (gadget.is('.error')) {
+				state = 'error';
+			} else if (gadget.is('.connected')) {
+				state = 'connected';
+			} else {
+				state = 'disconnected';
+			}
+
+			//Find setup forms for this gadget in its current state
+			var	setup = $(this).siblings('.setup.' + state);
+
+			//Use center gadget (Greader) for all Google services
+			if (setup.length == 0) setup = $('#gmail').find('.setup.' + state);
+
+			if (setup.is(':hidden')) {
+				//Hide all other setups
+				hideSetupForm($('.setup:visible').not(setup));
+
+				//Show this setup
+				showSetupForm(setup);
+			}
+			else
+				//Hide this setup
+				hideSetupForm(setup);
+
+			return false;
+		});
+
+		//Show loading indicator on all forms
+		$('#gadgets form').submit(function(e) {
+			//Indicate loading
+			var submitBtn = $(this).find('input[type=submit]');
+			submitBtn.data('original-label', submitBtn.val());
+			submitBtn.attr('disabled', true).val('Loading...');
+		});
+
+		//Ajaxify all setup forms
+		$('#gadgets form:not(.external)').submit(function(e) {
+			//Collect form data
+			var form = $(this), data = { };
+
+			$.each(form.serializeArray(), function(i, pair) {
+				data[pair.name] = pair.value;
+			});
+
+			//Indicate loading
+			$(this).find('input').attr('disabled', true);
+
+			$.ajax({
+				type: 'post',
+				url: form.attr('action'),
+				data: data,
+				success: function(response) {
+					//Find corresponding setup container
+					var setup = (form.is('.setup') ? form : form.closest('.setup'));
+
+					//Hide setup and clear form
+					setup.animate({
+						opacity: 0,
+						top: '-10px'
+					}, 100, function() {
+						$(this).hide();
+					});
+
+					//Find affected gadgets
+					var gadgets = form.closest('.gadget');
+
+					//All Google gadgets if central Greader form is shown
+					if (gadgets.attr('id') === 'gmail') gadgets = $('#gmail, #gcal');
+
+					//Change gadget state and data
+					if (data._method === 'put' || data._method === 'patch') {
+						gadgets.removeClass('disconnected error').addClass('connected').css('opacity', 1);
+
+						for (var gadget in response) {
+							var link = $('#' + gadget + ' a');
+							link.contents()[0].nodeValue = response[gadget].text;
+							link.attr('href', response[gadget].uri);
+						}
+					}
+					else if (data._method === "delete") {
+						var link = gadgets.find('a');
+
+						link.attr('href', '').contents().each(function() {
+							if (this.nodeType == 3) this.nodeValue = '0';
+						});
+
+						gadgets.removeClass('connected').addClass('disconnected').show();
+					}
+				},
+				error: function(xhr) {
+					if (xhr.status === 403) {
+						alert('We could not log you in with this email address and password. Are you sure your password is correct?');
+					} else {
+						alert('Sorry, that didn\'t work. :( Try again, and, if it\'s still not working, let us know at hello@updatified.com!');
+					}
+				},
+				complete: function() {
+					//Restore form to normal state
+					form.find('input').attr('disabled', false);
+
+					var submitBtn = form.find('input[type=submit]');
+					submitBtn.val(submitBtn.data('original-label'));
+				}
+			});
+
+			e.preventDefault();
+		});
+	},
+	toggleSetup: function(showSetup) {
+		//Prevent double initializition
+		if (showSetup == this.showingSetup) return;
+
 		//Enable setup
 		if (showSetup) {
+			//Enable gadget click handlers
 			this.showingSetup = true;
 
 			$('#instructions').show();
@@ -151,114 +279,11 @@ var updatified = {
 			$('.gadget.disconnected').show();
 			$('#gadgets').attr('class', 'items-' + $('.gadget').length);
 
-			$('.gadget a').click(function() {
-				var state = ($(this).closest('.gadget').is('.connected') ? 'connected' : 'disconnected');
-
-				//Find setup forms for this gadget in its current state
-				var	setup = $(this).siblings('.setup.' + state);
-
-				//Use center gadget (Greader) for all Google services
-				if (setup.length == 0) setup = $('#gmail').find('.setup.' + state);
-
-				if (setup.is(':hidden')) {
-					//Hide all other setups
-					hideSetupForm($('.setup:visible').not(setup));
-
-					//Show this setup
-					showSetupForm(setup);
-				}
-				else
-					//Hide this setup
-					hideSetupForm(setup);
-
-				return false;
-			});
-
-			//Show loading indicator on all forms
-			$('#gadgets form').submit(function(e) {
-				//Indicate loading
-				var submitBtn = $(this).find('input[type=submit]');
-				submitBtn.data('original-label', submitBtn.val());
-				submitBtn.attr('disabled', true).val('Loading...');
-			});
-
-			//Ajaxify all setup forms
-			$('#gadgets form:not(.external)').submit(function(e) {
-				//Collect form data
-				var form = $(this), data = { };
-
-				$.each(form.serializeArray(), function(i, pair) {
-					data[pair.name] = pair.value;
-				});
-
-				//Indicate loading
-				$(this).find('input').attr('disabled', true);
-
-				$.ajax({
-					type: 'post',
-					url: form.attr('action'),
-					data: data,
-					success: function(response) {
-						//Find corresponding setup container
-						var setup = (form.is('.setup') ? form : form.closest('.setup'));
-
-						//Hide setup and clear form
-						setup.animate({
-							opacity: 0,
-							top: '-10px'
-						}, 100, function() {
-							$(this).hide();
-						});
-
-						//Find affected gadgets
-						var gadgets = form.closest('.gadget');
-
-						//All Google gadgets if central Greader form is shown
-						if (gadgets.attr('id') === 'gmail') gadgets = $('#gmail, #gcal');
-
-						//Change gadget state and data
-						if (data._method === 'put' || data._method === 'patch') {
-							gadgets.removeClass('disconnected').addClass('connected').css('opacity', 1);
-
-							for (var gadget in response) {
-								var link = $('#' + gadget + ' a');
-								link.contents()[0].nodeValue = response[gadget].text;
-								link.attr('href', response[gadget].uri);
-							}
-						}
-						else if (data._method === "delete") {
-							var link = gadgets.find('a');
-
-							link.attr('href', '').contents().each(function() {
-								if (this.nodeType == 3) this.nodeValue = '0';
-							});
-
-							gadgets.removeClass('connected').addClass('disconnected').show();
-						}
-					},
-					error: function(xhr) {
-						if (xhr.status === 403) {
-							alert('We could not log you in with this email address and password. Are you sure your password is correct?');
-						} else {
-							alert('Sorry, that didn\'t work. :( Try again, and, if it\'s still not working, let us know at hello@updatified.com!');
-						}
-					},
-					complete: function() {
-						//Restore form to normal state
-						form.find('input').attr('disabled', false);
-
-						var submitBtn = form.find('input[type=submit]');
-						submitBtn.val(submitBtn.data('original-label'));
-					}
-				});
-
-				e.preventDefault();
-			});
-
 			$('#settings').text('I\'m done adding gadgets');
 		}
 		//Disable setup
 		else {
+			//Disable gadget click handlers
 			this.showingSetup = false;
 
 			$('#instructions').hide();
@@ -269,10 +294,6 @@ var updatified = {
 
 			//Hide all setup forms
 			$('.setup').hide();
-
-			//Unbind event handlers
-			$('.gadget a').unbind('click');
-			$('#gadgets form:not(.external)').unbind('submit');
 
 			$('#settings').text('gadgets');
 		}
@@ -356,6 +377,8 @@ var updatified = {
 		});
 
 		//Setup
+		self.initSetup();
+
 		$('#settings').click(function(e) {
 			if (self.showingSetup)
 				if (window.history) window.history.pushState(false, 'Updatified', 'http://updatified.com/dashboard');

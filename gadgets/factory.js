@@ -38,6 +38,10 @@ exports.assembleGadget = function(options) {
 			return this.data.uri || options.uri;
 		});
 
+		this.__defineGetter__('consecutiveErrors', function() {
+			return this.data.consecutiveErrors;
+		});
+
 		var self = this;
 
 		//Expose update function wrapped with error handling
