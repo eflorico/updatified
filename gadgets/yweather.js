@@ -72,7 +72,7 @@ module.exports.getWoeid = function(app, location, callback) {
 				callback(null, {
 					name: doc.places.place.name.$t,
 					woeid: doc.places.place.woeid.$t,
-					countrycode: doc.places.place.country.code.$t
+					countrycode: doc.places.place.country.code
 				});
 			} catch (err) {
 				error(err, res, callback);
