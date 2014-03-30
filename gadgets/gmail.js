@@ -29,7 +29,7 @@ module.exports = assembleGadget({
 					account = that.user.accounts.google;
 
 					callback();
-				})
+				});
 			});
 		}
 
