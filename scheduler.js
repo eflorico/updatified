@@ -30,7 +30,7 @@ function shouldRetreat(gadgetName, user) {
 		  '6':      30 * 60, //Stop updating for 30m after up to 6 errors
 		  '8':  2 * 60 * 60, //Stop udpating for 2h after up to 8 errors
 		 '16':  6 * 60 * 60, //Stop udpating for 6h after up to 16 errors
-		 '23': 24 * 60 * 60  //Stop updating for 24h after up to 112 errors
+		 '23': 24 * 60 * 60  //Stop updating for 24h after up to 23 errors
 		                     //After more than 23 errors, updating is halted
 	},
 	gadget = user.gadgets[gadgetName];
