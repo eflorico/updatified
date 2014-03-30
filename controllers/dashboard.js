@@ -51,7 +51,9 @@ exports.registerController = function(app) {
 				//Shortest interval is used for AJAX updating
 				var minAge = _.min(gadgets[name].intervals) * 1000;
 
-				return age >= minAge;
+				//Also request update for gadgets that failed to update
+				//as the retreat interval might have passed
+				return age >= minAge || req.user.gadgets[name.toLowerCase()].consecutiveErrors > 0;
 			});
 
 			//Request immediate update of user

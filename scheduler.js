@@ -293,8 +293,11 @@ function gatherStaleGadgets(app, callback) {
 		var staleGadgets = [ ];
 
 		for (var gadgetName in this.gadgets) {
-			if (shouldUpdate(gadgetName, this, intervals) &&
-				!shouldRetreat(gadgetName, this))
+			//Update when gadget is due for update or when the retreat interval
+			//has just passed after an error
+			if (!shouldRetreat(gadgetName, this) &&
+				shouldUpdate(gadgetName, this, intervals) ||
+				this.gadgets[gadgetName].consecutiveErrors > 0)
 			{
 				staleGadgets.push(gadgetName);
 			}
