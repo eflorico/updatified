@@ -248,6 +248,8 @@ var updatified = {
 				error: function(xhr) {
 					if (xhr.status === 403) {
 						alert('We could not log you in with this email address and password. Are you sure your password is correct?');
+					} else if (/\/yweather$/.test(form.attr('action')) && xhr.status === 404) {
+						alert('We could not find any weather data for this place. Maybe you can try entering a larger nearby city?');
 					} else {
 						alert('Sorry, that didn\'t work. :( Try again, and, if it\'s still not working, let us know at hello@updatified.com!');
 					}
