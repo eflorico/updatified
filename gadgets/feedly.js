@@ -1,4 +1,5 @@
-var request = require('request'),
+var async = require('async'),
+	request = require('request'),
 	assembleGadget = require('./factory').assembleGadget,
 	error = require('../lib/error');
 
@@ -7,34 +8,62 @@ module.exports = assembleGadget({
 	account: 'Feedly',
 	uri: 'http://feedly.com/',
 	update: function(app, callback) {
-		request({
-			url: 'https://cloud.feedly.com/v3/markers/counts',
-			qs: {
-				autorefresh: 'true'
-			},
-			headers: {
-				Authorization: 'OAuth ' + this.user.accounts.feedly.token
-			},
-			strictSSL: true
-		}, function(err, res, body) {
-			if (error(err, res, callback)) return;
+		var that = this,
+			account = this.user.accounts.feedly,
+			tasks = [ ];
 
-			try {
-				var doc = JSON.parse(body);
+		//Request new access token after expiry
+		if (account.expires <= new Date) {
+			tasks.push(function(callback) {
+				var feedly = require('../accounts/feedly');
 
-				for (var i = 0; i < doc.unreadcounts.length; i++) {
-					var stream = doc.unreadcounts[i];
-					if (/^user\/[\w-]+\/category\/global\.all$/.test(stream.id)) {
-						callback(null, { value: stream.count });
-						return;
+				feedly.refresh(app, account.refresh_token, function(err, result) {
+					if (error(err, callback)) return;
+
+					//Store new token; it will later be saved together with all other user data
+					for (var key in result) {
+						that.user.accounts.feedly[key] = result[key];
 					}
-				}
 
-				callback('Feedly: Could not find global.all category');
-			} catch (err) {
-				error(err, res, callback);
-			}
+					account = that.user.accounts.feedly;
+
+					callback();
+				});
+			});
+		}
+
+		tasks.push(function(callback) {
+			request({
+				url: 'https://cloud.feedly.com/v3/markers/counts',
+				qs: {
+					autorefresh: 'true'
+				},
+				headers: {
+					Authorization: 'OAuth ' + account.token
+				},
+				strictSSL: true
+			}, function(err, res, body) {
+				if (error(err, res, callback)) return;
+
+				try {
+					var doc = JSON.parse(body);
+
+					for (var i = 0; i < doc.unreadcounts.length; i++) {
+						var stream = doc.unreadcounts[i];
+						if (/^user\/[\w-]+\/category\/global\.all$/.test(stream.id)) {
+							callback(null, { value: stream.count });
+							return;
+						}
+					}
+
+					callback('Feedly: Could not find global.all category');
+				} catch (err) {
+					error(err, res, callback);
+				}
+			});
 		});
+
+		async.waterfall(tasks, callback);
 	},
 	intervals: [
 		          5 * 60,            20, //5m after login, update every 20s
