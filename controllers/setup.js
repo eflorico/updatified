@@ -103,7 +103,15 @@ exports.registerController = function(app) {
 
 			//Pull weather data for new location
 			var yweather = new gadgets.Yweather(req.user);
+
+			//Remove data for old location
+			req.user.gadgets.yweather.value = null;
+
 			yweather.update(app, function(err) {
+				//Precautiously abort when Yweather update failed,
+				//for some woeids, there are no weather data
+				if (err) return res.send(404);
+
 				//Update database
 				req.db.collection('users').updateById(req.user._id,
 					{
