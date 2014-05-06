@@ -211,16 +211,19 @@ var updatified = {
 					//Find corresponding setup container
 					var setup = (form.is('.setup') ? form : form.closest('.setup'));
 
-					//Hide setup and clear form
-					setup.animate({
-						opacity: 0,
-						top: '-10px'
-					}, 100, function() {
-						$(this).hide();
-					});
-
 					//Find affected gadgets
 					var gadgets = form.closest('.gadget');
+
+					//Hide setup and clear form unless the weather location is being updated
+					//In that case, keep the form to confirm it is the right location
+					if (gadgets.attr('id') !== 'yweather' || data._method === 'delete') {
+						setup.animate({
+							opacity: 0,
+							top: '-10px'
+						}, 100, function() {
+							$(this).hide();
+						});
+					}
 
 					//All Google gadgets if central Greader form is shown
 					if (gadgets.attr('id') === 'gmail') gadgets = $('#gmail, #gcal');
@@ -233,6 +236,15 @@ var updatified = {
 							var link = $('#' + gadget + ' a');
 							link.contents()[0].nodeValue = response[gadget].text;
 							link.attr('href', response[gadget].uri);
+
+							if (gadget === 'yweather') {
+								$('input[name=location]').val(response[gadget].location);
+								$('#yweather .setup.connected').css({
+									opacity: 1,
+									top: 0
+								}).show();
+								$('#yweather .setup.disconnected').hide();
+							}
 						}
 					}
 					else if (data._method === "delete") {

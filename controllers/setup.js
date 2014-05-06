@@ -128,7 +128,8 @@ exports.registerController = function(app) {
 						res.json({
 							yweather: {
 								text: yweather.value,
-								uri: yweather.uri
+								uri: yweather.uri,
+								location: place.name
 							}
 						});
 					}

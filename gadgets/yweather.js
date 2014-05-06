@@ -48,8 +48,8 @@ module.exports.getWoeid = function(app, location, callback) {
 	http.get({
 		host: 'where.yahooapis.com',
 		port: 80,
-		path: "/v1/places$and(.q('" + qs.escape(location) +
-			  "'),.type(7))?appid=" + app.set('yahoo-appid')
+		path: "/v1/places.q('" + qs.escape(location) + "')" +
+			  '?lang=en-US&format=json&appid=' + app.set('yahoo-appid')
 	}, function(res) {
 		if (error(res, callback)) return;
 
@@ -63,16 +63,58 @@ module.exports.getWoeid = function(app, location, callback) {
 		res.on('end', function() {
 			try {
 				//Convert XML to JSON for easier usage
-				var doc = xml.load(body);
+				var doc = JSON.parse(body);
 
 				if (!doc.places.place) {
 					throw new Error('Place not found: ' + location);
 				}
 
+				var place = doc.places.place[0];
+
+				//Merge all specified layers into one place name string
+				var placeLayers = [ 
+					'locality2',
+					'locality1',
+					'admin3',
+					'admin2',
+					'admin1',
+					'country'
+				];
+
+				//Gather all possible name parts
+				var nameParts = placeLayers.filter(function(layerName) {
+					//Reject empty/unspecified parts
+					return place[layerName] !== '';
+				}).map(function(layerName) {
+					return place[layerName];
+				}).filter(function(namePart, index, nameParts) {
+					//Reject duplicates, preferring higher layers
+					return !nameParts.some(function(otherNamePart, otherIndex) {
+						//Ignore lower layers that have already been filtered
+						if (otherIndex <= index) return false;
+
+						//Case insensitive
+						otherNamePart = otherNamePart.toLowerCase();
+						namePart = namePart.toLowerCase();
+
+						//Check whether one of the names contains the other
+						return otherNamePart.indexOf(namePart) !== -1 ||
+							namePart.indexOf(otherNamePart) !== -1;
+					});
+
+					//This changes
+					//Panjang, Bandar Lampung, Lampung, Republik Indonesia into
+					//Panjang, Lampung, Republik Indonesia and
+					//Kiel, Stadtteil Dusternbrook, Stadtkreis Kiel, Schleswig-Holstein, Germany into
+					//Stadtteil Dusternbrook, Stadtkreis Kiel, Schleswig-Holstein, Germany
+				});
+
+				var placeName = nameParts.join(', ');
+
 				callback(null, {
-					name: doc.places.place.name.$t,
-					woeid: doc.places.place.woeid.$t,
-					countrycode: doc.places.place.country.code
+					name: placeName,
+					woeid: place.woeid,
+					countrycode: place['country attrs'].code
 				});
 			} catch (err) {
 				error(err, res, callback);
