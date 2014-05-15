@@ -62,7 +62,10 @@ module.exports = assembleGadget({
 					that.data.calendars = [ ];
 
 					for (var i = 0; i < doc.items.length; i++) {
-						that.data.calendars.push(doc.items[i].id);
+						//Exclude Google holiday calendars
+						if (!/#holiday@group\.v\.calendar\.google\.com/.test(doc.items[i].id)) {
+							that.data.calendars.push(doc.items[i].id);
+						}
 					}
 
 					that.data.lastCalendarUpdate = new Date;
