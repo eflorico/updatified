@@ -50,6 +50,7 @@ module.exports = assembleGadget({
 				url: 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
 				qs: {
 					minAccessRole: 'reader',
+					fields: 'items/id',
 					access_token: account.token
 				},
 				strictSSL: true
@@ -137,6 +138,7 @@ module.exports = assembleGadget({
 					qs: {
 						timeMin: start.toISOString(),
 						timeMax: end.toISOString(),
+						fields: 'items(start,end)',
 						access_token: account.token
 					},
 					strictSSL: true
