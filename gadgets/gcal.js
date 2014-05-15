@@ -130,7 +130,7 @@ module.exports = assembleGadget({
 			async.map(that.data.calendars, function(calendarId, callback) {
 				request({
 					url: 'https://www.googleapis.com/calendar/v3/calendars/' +
-						calendarId + '/events',
+						encodeURIComponent(calendarId) + '/events',
 					qs: {
 						timeMin: start.toISOString(),
 						timeMax: end.toISOString(),
