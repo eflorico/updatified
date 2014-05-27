@@ -98,9 +98,6 @@ exports.configure = function(app) {
 		//so that PUT and DELETE can be used
 		app.use(express.methodOverride());
 
-		//Set up gzip/deflate compression
-		app.use(express.compress());
-
 		//Serve static files from "public" directory
 		app.use(express.static(__dirname + '/public', { maxAage: 365 * 24 * 60 * 60 * 1000 }));
 
