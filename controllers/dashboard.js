@@ -19,6 +19,12 @@ exports.registerController = function(app) {
 			}
 		});
 
+		res.set({
+			'Cache-Control': 'no-cache, no-store, must-revalidate',
+			'Pragma': 'no-cache',
+			'Expires': 0
+		});
+
 		//Regular request
 		if (!req.xhr) {
 			//Renew Facebook access token when expiry is imminent
